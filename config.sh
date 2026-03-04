@@ -29,6 +29,16 @@ SAGEATTENTION_REPO="https://gitee.com/andangel/SageAttention.git"
 SAGEATTENTION_DIR="$HOME/SageAttention"
 SAGEATTENTION_VERSION="2.2.0"
 
+# FlashAttention Configuration
+FLASHATTENTION_REPO="https://github.com/Dao-AILab/flash-attention.git"
+FLASHATTENTION_DIR="$HOME/flash-attention"
+FLASHATTENTION_VERSION="2.8.3"
+
+# SAM2 Configuration
+SAM2_REPO="https://github.com/facebookresearch/sam2.git"
+SAM2_DIR="$HOME/sam2"
+SAM2_VERSION="1.0"
+
 # Versions
 PYTHON_VERSION="3.12"
 CONDA_ENV_NAME="comfyui"

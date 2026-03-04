@@ -16,8 +16,11 @@
     - **CUDA**: 自动安装 CUDA Toolkit 12.8
     - **PyTorch**: 安装 PyTorch 2.8.0 (CUDA 12.8 版本)
     - **ComfyUI**: 自动克隆并安装 ComfyUI 及其依赖
-    - **SageAttention**: 自动编译并安装 SageAttention 2.2.0 优化器
+    - **SageAttention**: 自动下载预编译 wheel 或编译安装 SageAttention 2.2.0 优化器
+    - **FlashAttention**: 自动下载预编译 wheel 或编译安装 FlashAttention 2.8.3
+    - **SAM2**: 自动下载预编译 wheel 或编译安装 SAM2 1.0
     - **Triton**: 自动安装 Triton 3.4.0 性能优化库
+    - **GitHub Actions**: 自动编译预编译 wheel 包，加速安装过程
 
 ## 🚀 快速开始
 
@@ -59,6 +62,8 @@
 | **PyTorch** | `./main.sh --pytorch` | 安装 PyTorch 2.8.0 (CUDA 12.8) |
 | **ComfyUI** | `./main.sh --comfyui` | 安装 ComfyUI 及依赖 |
 | **SageAttention** | `./main.sh --sageattention` | 安装 SageAttention 2.2.0 |
+| **FlashAttention** | `./main.sh --flashattention` | 安装 FlashAttention 2.8.3 |
+| **SAM2** | `./main.sh --sam2` | 安装 SAM2 1.0 |
 
 ### 自定义配置
 
@@ -83,7 +88,9 @@
     ├── setup_cuda.sh
     ├── setup_pytorch.sh
     ├── setup_comfyui.sh
-    └── setup_sageattention.sh
+    ├── setup_sageattention.sh
+    ├── setup_flashattention.sh
+    └── setup_sam2.sh
 ```
 
 ## ⚠️ 注意事项
@@ -92,8 +99,9 @@
 2.  **Shell 重启**：脚本执行完毕后，建议重启终端或执行 `source ~/.bashrc`，以确保环境变量立即生效。
 3.  **WSL 重启**：运行 `--wsl` 后，需要执行 `wsl --shutdown` 重启 WSL 实例以使配置生效。
 4.  **CUDA 安装**：CUDA Toolkit 12.8 安装需要较长时间，请耐心等待。
-5.  **SageAttention 编译**：SageAttention 需要编译，确保已安装 `build-essential`、`gcc`、`g++`、`make` 等编译工具。
-6.  **GPU 要求**：本环境需要 NVIDIA GPU 支持，建议显存 >= 8GB。
+5.  **预编译 Wheel**：脚本会优先从 GitHub Releases 下载预编译的 wheel 包（SageAttention、FlashAttention、SAM2），如果下载失败则会自动进行本地编译。
+6.  **本地编译**：如果预编译 wheel 不可用，脚本会自动进行本地编译，确保已安装 `build-essential`、`gcc`、`g++`、`make` 等编译工具。
+7.  **GPU 要求**：本环境需要 NVIDIA GPU 支持，建议显存 >= 8GB。
 
 ## 🎯 启动 ComfyUI
 
@@ -131,6 +139,8 @@ python ~/test_sageattention.py
 | Triton | 3.4.0 | PyTorch 性能优化 |
 | ComfyUI | - | AI 图像生成工具 |
 | SageAttention | 2.2.0 | 注意力机制优化 |
+| FlashAttention | 2.8.3 | 注意力机制优化 |
+| SAM2 | 1.0 | 图像分割模型 |
 
 ## 🚨 故障排除
 
@@ -138,6 +148,18 @@ python ~/test_sageattention.py
 - 如果 PyTorch 安装失败，检查网络连接和磁盘空间
 - 如果 ComfyUI 启动失败，检查依赖是否完整安装
 - 如果 SageAttention 编译失败，确保已安装编译工具链
+- 如果预编译 wheel 下载失败，脚本会自动回退到本地编译模式
+
+## 🔄 GitHub Actions 自动编译
+
+本项目使用 GitHub Actions 自动编译预编译的 wheel 包，以加速安装过程：
+
+- **自动触发**：每次推送到 `master` 或 `main` 分支时自动触发
+- **手动触发**：可以在 GitHub Actions 页面手动触发编译
+- **编译产物**：编译好的 wheel 包会作为 Artifacts 保存 90 天
+- **下载优先**：安装脚本会优先尝试下载预编译 wheel，失败时自动回退到本地编译
+
+查看编译状态和下载产物：https://github.com/andangel/setup-wsl2-ubuntu/actions
 
 ## 📝 许可证
 

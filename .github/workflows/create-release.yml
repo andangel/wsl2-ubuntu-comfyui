@@ -1,0 +1,41 @@
+name: Create Release
+
+on:
+  workflow_run:
+    workflows: ["Build Precompiled Wheels"]
+    types:
+      - completed
+
+permissions:
+  contents: write
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: ./artifacts
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: ./artifacts/**/*.whl
+        tag_name: latest
+        name: Precompiled Wheels
+        body: |
+          Precompiled wheel packages for Ubuntu 24.04 (WSL2) ComfyUI Environment
+          
+          ## Available Packages:
+          - SageAttention 2.2.0
+          - FlashAttention 2.8.3
+          - SAM2 1.0
+          
+          ## Installation:
+          The setup scripts will automatically download these wheels. If download fails, they will be compiled locally.
+        draft: false
+        prerelease: false

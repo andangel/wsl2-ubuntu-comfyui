@@ -28,12 +28,15 @@ help() {
     echo "  --pytorch          安装 PyTorch ${PYTORCH_VERSION} (CUDA 12.8)"
     echo "  --comfyui          安装 ComfyUI 及依赖"
     echo "  --sageattention    安装 SageAttention ${SAGEATTENTION_VERSION}"
+    echo "  --flashattention    安装 FlashAttention 2.8.3"
+    echo "  --sam2             安装 SAM2 1.0"
     echo "  --help             显示此帮助信息"
     echo ""
     echo "示例:"
     echo "  $0 --all"
     echo "  $0 --apt --conda"
     echo "  $0 --pytorch --comfyui"
+    echo "  $0 --flashattention --sam2"
 }
 
 # --- 主程序 ---
@@ -56,6 +59,8 @@ while [[ $# -gt 0 ]]; do
             ./scripts/setup_pytorch.sh
             ./scripts/setup_comfyui.sh
             ./scripts/setup_sageattention.sh
+            ./scripts/setup_flashattention.sh
+            ./scripts/setup_sam2.sh
             shift
             ;;
         --apt)
@@ -92,6 +97,14 @@ while [[ $# -gt 0 ]]; do
             ;;
         --sageattention)
             ./scripts/setup_sageattention.sh
+            shift
+            ;;
+        --flashattention)
+            ./scripts/setup_flashattention.sh
+            shift
+            ;;
+        --sam2)
+            ./scripts/setup_sam2.sh
             shift
             ;;
         --help)
