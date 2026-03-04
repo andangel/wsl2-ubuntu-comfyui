@@ -1,9 +1,7 @@
 #!/bin/bash
 
 # Deb Deps
-DEB_DEPS="unzip proxychains4 build-essential gcc g++ make wget"
-
-# Default Configuration
+DEB_DEPS="unzip build-essential gcc g++ make wget"
 
 # Mirrors
 MIRROR_UBUNTU="https://mirrors.tuna.tsinghua.edu.cn/ubuntu/"
