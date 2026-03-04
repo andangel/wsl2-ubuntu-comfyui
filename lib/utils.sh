@@ -12,9 +12,9 @@ log_success() { echo -e "${GREEN}[SUCCESS]${NC} $1"; }
 log_warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
 log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
 
-# Check and confirm action
-# Usage: check_and_confirm "Description" "Check Command"
-# Returns 0 to proceed, 1 to skip
+# 检查并确认操作
+# 用法: check_and_confirm "描述" "检查命令"
+# 返回 0 表示继续，1 表示跳过
 check_and_confirm() {
     local description="$1"
     
@@ -34,12 +34,12 @@ check_and_confirm() {
                 ;;
         esac
     else
-        # Not configured, proceed
+        # 未配置，继续
         return 0
     fi
 }
 
-# Network error handler
+# 网络错误处理程序
 handle_net_error() {
     log_error "网络请求失败！"
     log_error "建议配置本地代理（如 proxychains4）后重试。"
