@@ -31,16 +31,50 @@ setup_comfyui() {
         # GPU launch script
         cat > ~/run_nvidia_gpu.sh <<'EOF'
 #!/bin/bash
-cd ~/ComfyUI
-python main.py --listen 0.0.0.0 --port 8188
+
+# 检查是否激活了 conda 虚拟环境
+if [ -z "$CONDA_DEFAULT_ENV" ]; then
+  echo "未激活 conda 虚拟环境，正在激活 base..."
+  # 尝试激活虚拟环境
+  if [ -f ~/miniconda3/etc/profile.d/conda.sh ]; then
+    source ~/miniconda3/etc/profile.d/conda.sh
+    conda activate base
+  else
+    echo "警告: 无法找到 conda 配置文件，请手动激活虚拟环境后再运行脚本。"
+  fi
+fi
+
+# 使用 NVIDIA GPU 运行 ComfyUI
+echo "使用 NVIDIA GPU 启动 ComfyUI..."
+echo "从 Windows 浏览器访问: http://localhost:8188"
+echo "按 Ctrl+C 停止服务器"
+
+python3 ComfyUI/main.py --listen 0.0.0.0
 EOF
         chmod +x ~/run_nvidia_gpu.sh
 
         # CPU launch script
         cat > ~/run_cpu.sh <<'EOF'
 #!/bin/bash
-cd ~/ComfyUI
-python main.py --cpu --listen 0.0.0.0 --port 8188
+
+# 检查是否激活了 conda 虚拟环境
+if [ -z "$CONDA_DEFAULT_ENV" ]; then
+  echo "未激活 conda 虚拟环境，正在激活 base..."
+  # 尝试激活虚拟环境
+  if [ -f ~/miniconda3/etc/profile.d/conda.sh ]; then
+    source ~/miniconda3/etc/profile.d/conda.sh
+    conda activate base
+  else
+    echo "警告: 无法找到 conda 配置文件，请手动激活虚拟环境后再运行脚本。"
+  fi
+fi
+
+# 使用 CPU 运行 ComfyUI
+echo "使用 CPU 启动 ComfyUI..."
+echo "从 Windows 浏览器访问: http://localhost:8188"
+echo "按 Ctrl+C 停止服务器"
+
+python3 ComfyUI/main.py --cpu --listen 0.0.0.0
 EOF
         chmod +x ~/run_cpu.sh
 

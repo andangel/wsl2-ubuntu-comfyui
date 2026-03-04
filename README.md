@@ -10,12 +10,12 @@
 - **AI 工具链集成**：
     - **基础依赖**: 自动安装 unzip、build-essential 等常用工具。
     - **Python**: Miniconda3 (默认创建 Python 3.12 `comfyui` 环境)
-    - **CUDA**: 自动安装 CUDA Toolkit 12.8
     - **PyTorch**: 安装 PyTorch 2.8.0 (CUDA 12.8 版本)
     - **ComfyUI**: 自动克隆并安装 ComfyUI 及其依赖
-    - **SageAttention**: 自动下载预编译 wheel 或编译安装 SageAttention 2.2.0 优化器
-    - **FlashAttention**: 自动下载预编译 wheel 或编译安装 FlashAttention 2.8.3
-    - **SAM2**: 自动下载预编译 wheel 或编译安装 SAM2 1.0
+    - **CUDA Toolkit**: 手动安装 (运行 `./main.sh --cudatoolkit`)
+    - **SageAttention**: 手动安装 (运行 `./main.sh --sageattention`)
+    - **FlashAttention**: 手动安装 (运行 `./main.sh --flashattention`)
+    - **SAM2**: 手动安装 (运行 `./main.sh --sam2`)
     - **Triton**: 自动安装 Triton 3.4.0 性能优化库
     - **GitHub Actions**: 自动编译预编译 wheel 包，加速安装过程
 
@@ -70,7 +70,7 @@
     ├── setup_apt.sh
     ├── install_deps.sh
     ├── setup_miniconda.sh
-    ├── setup_CUDAToolkit.sh
+    ├── setup_cudatoolkit.sh
     ├── setup_pytorch.sh
     ├── setup_comfyui.sh
     ├── setup_sageattention.sh
@@ -101,13 +101,7 @@
 - **访问 ComfyUI**：
     - 在 Windows 浏览器中访问：http://localhost:8188
 
-## 🔧 测试 SageAttention
 
-安装 SageAttention 后，可以运行测试脚本验证安装：
-
-```bash
-python ~/test_sageattention.py
-```
 
 ## 📋 技术栈
 
