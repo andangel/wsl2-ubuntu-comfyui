@@ -1,60 +1,108 @@
-# 同时安装与使用多个 Ubuntu 22.04 LTS 镜像
+# WSL2 基础系统初始化指南
 
-1. 下载 Ubuntu 22.04 LTS 
+本指南用于在 Windows 上创建和配置 WSL2 Ubuntu 24.04 基础系统。
 
-- Ubuntu 22.04 LTS (Jammy Jellyfish) 服务器版镜像下载链接：[64 位 AMD/Intel 服务器版（cloud image）](https://cloud-images.ubuntu.com/releases/jammy/release/ubuntu-22.04-server-cloudimg-amd64-root.tar.xz)
-- 中国传媒大学校内分享名称：Linux系统与网络管理-课程公开分享 分享链接：https://kod.cuc.edu.cn/#s/9BGcMgPw 访问密码：sumw2
-  
-  
-2. 准备工作
+## 📋 初始化步骤
+
+### 1. 目录创建
 
 ```powershell
-mkdir d:\WSL\untu-22.04-Dev
+mkdir D:\Backup -Force
+mkdir D:\WSL2\Comfyui -Force
 ```
 
-3. 导入并创建新的 WSL 实例
+### 2. 下载 Ubuntu 24.04 基础系统
 
-确保下载的镜像文件 `ubuntu-22.04-server-cloudimg-amd64-root.tar.xz` 位于当前目录下，执行以下命令：
+**下载地址**：
+```
+https://wslstorestorage.blob.core.windows.net/wslblob/Ubuntu2404-240425.AppxBundle
+```
+
+**下载并重命名**：
+```powershell
+# 下载并重命名为 ZIP 格式
+Invoke-WebRequest -Uri "https://wslstorestorage.blob.core.windows.net/wslblob/Ubuntu2404-240425.AppxBundle" -OutFile "D:\Backup\Ubuntu2404-240425.zip"
+```
+
+### 3. 解压基础系统
 
 ```powershell
-wsl --import Ubuntu-22.04-Dev D:\WSL\untu-22.04-Dev ubuntu-22.04-server-cloudimg-amd64-root.tar.xz --version 2
+# 解压 Ubuntu2404-240425.zip 文件
+Expand-Archive -LiteralPath "D:\Backup\Ubuntu2404-240425.zip" -DestinationPath "D:\Backup"
 ```
 
-4. 启动实例并完成初始化
+### 4. 导入基础系统
 
 ```powershell
-# 1. 启动新实例
-wsl -d Ubuntu-22.04-Dev
-
-# 2. 进入实例后，由于是 rootfs 导入，默认以 root 用户登录。
-# 你可以选择直接使用 root 用户，但为了隔离和安全性，建议创建一个新普通用户。
-
-# 3. 创建新的独立用户（例如，用户名为 cuc）
-adduser cuc
-# 按照提示设置新用户的密码和相关信息
-
-# 4. 将新用户添加到 sudo 组，以获得管理员权限
-usermod -aG sudo cuc
-
-# 5. （可选但推荐）设置该用户为默认登录用户
-# 退出实例回到 Windows 终端
-exit
-
-# 在 Windows 终端中，为这个新实例创建 WSL 配置文件
-# 注意：以下命令中的路径需要使用实例内的 Linux 路径格式
-wsl -d Ubuntu-22.04-Dev -u root bash -c "echo -e '[user]
-default=cuc' > /etc/wsl.conf"
-
-# 6. 关闭该实例，使配置生效
-wsl --terminate Ubuntu-22.04-Dev
-
-# 7. 重新启动实例，此时应默认以 devuser 用户登录
-wsl -d Ubuntu-22.04-Dev
+# 导入到 WSL2
+wsl --import Ubuntu2404 "D:\WSL2\Comfyui" "D:\Backup\Ubuntu2404-240425\install.tar.gz" --version 2
 ```
 
-5. 验证安装
+**说明**：
+- `install.tar.gz` 就是基础系统的压缩包
+- 包含完整的 Ubuntu 24.04 系统文件
+- 使用 `--version 2` 参数导入
+
+### 5. 首次登录与用户配置
+
+#### 5.1 以 root 身份首次登录
 
 ```powershell
-wsl --list --verbose
+wsl -d Ubuntu2404
 ```
 
+#### 5.2 执行 WSL2 基础系统初始化脚本
+
+```bash
+cd /path/to/setup-wsl2-ubuntu
+sudo bash scripts/init_wsl_base.sh
+```
+
+**注意**：此脚本需要以 root 身份在 WSL 内部执行。
+
+**脚本会自动完成以下操作**：
+- ✅ 授予 ubuntu 用户 sudo 权限
+- ✅ 配置默认登录用户为 ubuntu
+- ✅ 配置安全设置（systemd、禁用自动挂载、禁用 Windows PATH）
+- ✅ 配置 fstab（只映射 E 盘到 /mnt/e）
+- ✅ 创建挂载点
+- ✅ 清理历史记录
+
+#### 5.3 终止 WSL 实例
+
+```powershell
+wsl --terminate Ubuntu2404
+```
+
+#### 5.4 重新登录验证
+
+```powershell
+wsl -d Ubuntu2404
+```
+
+#### 5.5 测试 ubuntu 用户权限
+
+```bash
+sudo apt update
+sudo apt upgrade
+```
+
+### 6. 克隆项目
+
+```bash
+git clone https://github.com/andangel/wsl2-ubuntu-comfyui.git
+cd wsl2-ubuntu-comfyui
+```
+
+## 📝 后续步骤
+
+基础系统初始化完成后，可以运行主脚本进行环境配置：
+
+```bash
+chmod +x main.sh scripts/*.sh
+./main.sh --all
+```
+
+## 🎯 初始化完成
+
+WSL2 基础系统初始化完成！现在可以开始配置 ComfyUI 环境。
