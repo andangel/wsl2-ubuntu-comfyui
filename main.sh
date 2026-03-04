@@ -21,8 +21,6 @@ help() {
     echo "  --all              执行所有配置步骤"
     echo "  --apt              配置 APT 镜像源 (清华源)"
     echo "  --deps             安装基础依赖 (unzip, proxychains4, build-essential)"
-    echo "  --wsl              配置 WSL 基础设置 (/etc/wsl.conf)"
-    echo "  --git              配置 Git 客户端 (需先修改 git.config)"
     echo "  --conda            安装/配置 Miniconda & Python $PYTHON_VERSION"
     echo "  --cuda             安装 CUDA Toolkit ${CUDA_VERSION}"
     echo "  --pytorch          安装 PyTorch ${PYTORCH_VERSION} (CUDA 12.8)"
@@ -36,6 +34,7 @@ help() {
     echo "  $0 --all"
     echo "  $0 --apt --conda"
     echo "  $0 --pytorch --comfyui"
+    echo "  $0 --sageattention --sam2"
     echo "  $0 --flashattention --sam2"
 }
 
@@ -53,7 +52,6 @@ while [[ $# -gt 0 ]]; do
             ./scripts/setup_apt.sh
             ./scripts/install_deps.sh
             ./scripts/setup_wsl.sh
-            ./scripts/setup_git.sh
             ./scripts/setup_miniconda.sh
             ./scripts/setup_cuda.sh
             ./scripts/setup_pytorch.sh
@@ -73,10 +71,6 @@ while [[ $# -gt 0 ]]; do
             ;;
         --wsl)
             ./scripts/setup_wsl.sh
-            shift
-            ;;
-        --git)
-            ./scripts/setup_git.sh
             shift
             ;;
         --conda)

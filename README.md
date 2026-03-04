@@ -6,12 +6,9 @@
 
 - **国内加速**：APT、Conda、PyTorch 等均默认配置清华/国内镜像源，大幅提升下载速度。
 - **模块化设计**：支持一键全量安装，也支持按需单独配置特定组件。
-- **WSL2 优化**：针对 WSL2 环境优化的基础配置（systemd、PATH 隔离、自动挂载）。
 - **幂等性**：内置状态检查，重复运行会提示确认，避免误覆盖现有配置。
 - **AI 工具链集成**：
     - **基础依赖**: 自动安装 unzip、proxychains4、build-essential 等常用工具。
-    - **WSL 配置**: 自动配置 `/etc/wsl.conf` (systemd、PATH 隔离、禁用自动挂载)。
-    - **Git**: 自动配置 `~/.gitconfig`，强制校验用户信息。
     - **Python**: Miniconda3 (默认创建 Python 3.12 `comfyui` 环境)
     - **CUDA**: 自动安装 CUDA Toolkit 12.8
     - **PyTorch**: 安装 PyTorch 2.8.0 (CUDA 12.8 版本)
@@ -22,26 +19,90 @@
     - **Triton**: 自动安装 Triton 3.4.0 性能优化库
     - **GitHub Actions**: 自动编译预编译 wheel 包，加速安装过程
 
+## 🖥 WSL2 基础系统初始化
+
+在使用本脚本之前，需要先创建 WSL2 基础系统。以下是完整的初始化步骤：
+
+### 1. 目录创建
+```powershel
+mkdir D:\Backup -Force
+mkdir D:\WSL2\ -Force
+```
+
+### 2. 导入基础系统
+
+#### 2.1 下载 Ubuntu 24.04 基础系统
+
+Ubuntu 24.04 下载地址:https://wslstorestorage.blob.core.windows.net/wslblob/Ubuntu2404-240425.AppxBundle
+将下载的 AppxBundle 文件重命名为 ZIP 格式：
+```powershell
+```
+解压 Ubuntu2404-240425.zip 文件：
+```powershell
+
+```
+进入Ubuntu2404-240425文件夹
+```powershell
+cd Ubuntu2404-240425
+```
+将Ubuntu_2404.0.5.0_x64.appx文件重命名Ubuntu_2404.0.5.0_x64.zip
+```powershell
+
+```
+解压 Ubuntu_2404.0.5.0_x64.zip 文件：
+```powershell
+
+```
+进入 Ubuntu_2404.0.5.0_x64 文件夹
+```powershell
+cd Ubuntu_2404.0.5.0_x64
+```
+将 Ubuntu_2404.0.5.0_x64 文件夹中的install.tar.gz复制到 D:\Backup 文件夹
+```powershell
+cp -r install.tar.gz "D:\Backup"
+```
+
+#### 2.2 使用 install.tar.gz 导入（如果您已有）
+
+```powershell
+wsl --import Comfyui "D:\WSL2\Comfyui" "D:\Backup\install.tar.gz" --version 2
+```
+
+**说明**：
+- `install.tar.gz` 就是基础系统的压缩包
+- 包含完整的 Ubuntu 24.04 系统文件
+- 使用 `--version 2` 参数导入
+
+### 3. 首次登录与用户配置
+
+#### 3.1 给 ubuntu 用户添加 sudo 权限
+```powershell
+wsl -d Comfyui -u root -e usermod -aG sudo ubuntu
+```
+#### 3.2 默认让 ubuntu 用户登录
+```powershell
+wsl -u root -e sh -c "echo '[user]' >> /etc/wsl.conf && echo 'default=ubuntu' >> /etc/wsl.conf"
+```
+#### 3.3 重启 WSL 生效
+```powershell
+wsl --terminate Comfyui
+```
+#### 3.4 在开始菜单应该能看到名为Comfyui的快捷方式，点击进入WSL系统 克隆项目
+```bash
+git clone https://github.com/andangel/wsl2-ubuntu-comfyui.git
+cd wsl2-ubuntu-comfyui
+```
+
+
 ## � 快速开始
 
-1. **赋予执行权限**
+1.  **赋予执行权限**
     ```bash
     chmod +x main.sh scripts/*.sh
     ```
 
-2. **配置 Git 用户信息**
-    复制配置文件模板并填入您的姓名和邮箱：
-    ```bash
-    cp git.config.example git.config
-    ```
-    编辑 `git.config`：
-    ```ini
-    [user]
-        email = your.email@example.com
-        name = Your Name
-    ```
 
-3. **一键全量配置** (推荐)
+2.  **一键全量配置** (推荐)
     ```bash
     ./main.sh --all
     ```
@@ -55,8 +116,6 @@
 | **全量配置** | `./main.sh --all` | 执行所有初始化任务 |
 | **APT 换源** | `./main.sh --apt` | 备份原源，替换为清华源并更新缓存 |
 | **基础依赖** | `./main.sh --deps` | 安装 unzip、proxychains4、build-essential 等基础工具 |
-| **WSL 配置** | `./main.sh --wsl` | 配置 `/etc/wsl.conf` (启用 systemd、禁用自动挂载) |
-| **Git 配置** | `./main.sh --git` | 检查并复制 `git.config` 到 `~/.gitconfig` |
 | **Python (Conda)** | `./main.sh --conda` | 安装 Miniconda & 创建 `comfyui` 环境 |
 | **CUDA** | `./main.sh --cuda` | 安装 CUDA Toolkit 12.8 |
 | **PyTorch** | `./main.sh --pytorch` | 安装 PyTorch 2.8.0 (CUDA 12.8) |
@@ -90,16 +149,12 @@
     ├── setup_comfyui.sh
     ├── setup_sageattention.sh
     ├── setup_flashattention.sh
-    ├── setup_sam2.sh
-    ├── init_wsl_base.sh
-    ├── build_sageattention.sh
-    ├── build_flashattention.sh
-    └── build_sam2.sh
+    └── setup_sam2.sh
 ```
 
 ## ⚠️ 注意事项
 
-1.  **Git 配置**：运行 `--git` 或 `--all` 之前，**必须**从 `git.config.example` 复制并修改生成 `git.config` 文件。如果未配置，脚本会报错并停止执行。
+
 2.  **Shell 重启**：脚本执行完毕后，建议重启终端或执行 `source ~/.bashrc`，以确保环境变量立即生效。
 3.  **WSL 重启**：运行 `--wsl` 后，需要执行 `wsl --shutdown` 重启 WSL 实例以使配置生效。
 4.  **CUDA 安装**：CUDA Toolkit 12.8 安装需要较长时间，请耐心等待。
@@ -163,7 +218,7 @@ python ~/test_sageattention.py
 - **编译产物**：编译好的 wheel 包会作为 Artifacts 保存 90 天
 - **下载优先**：安装脚本会优先尝试下载预编译 wheel，失败时自动回退到本地编译
 
-查看编译状态和下载产物：https://github.com/andangel/wsl2-ubuntu-comfyui/actions
+查看编译状态和下载产物：https://github.com/andangel/setup-wsl2-ubuntu/actions
 
 ## 📝 许可证
 
