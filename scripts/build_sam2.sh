@@ -31,3 +31,10 @@ python setup.py bdist_wheel
 
 echo "SAM2 wheel built successfully!"
 ls -lh dist/
+
+# Create dist directory in root if it doesn't exist
+mkdir -p ../dist
+
+# Copy wheel to root dist directory
+echo "Copying wheel to root dist directory..."
+cp dist/*.whl ../dist/

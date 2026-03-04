@@ -69,7 +69,7 @@ while [[ $# -gt 0 ]]; do
             shift
             ;;
         --cudatoolkit)
-            ./scripts/setup_CUDAToolkit.sh
+            ./scripts/setup_cudatoolkit.sh
             shift
             ;;
         --pytorch)

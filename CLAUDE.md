@@ -25,7 +25,7 @@
   - `setup_apt.sh`: APT 软件源配置。
   - `install_deps.sh`: 基础依赖安装 (unzip, build-essential)。
   - `setup_miniconda.sh`: Miniconda 安装及 `comfyui` 环境创建。
-  - `setup_CUDAToolkit.sh`: CUDA Toolkit 12.8 安装。
+  - `setup_cudatoolkit.sh`: CUDA Toolkit 12.8 安装。
   - `setup_pytorch.sh`: PyTorch 2.8.0 (CUDA 12.8) 安装。
   - `setup_comfyui.sh`: ComfyUI 及依赖安装。
   - `setup_sageattention.sh`: SageAttention 2.2.0 安装（支持预编译 wheel 下载）。
@@ -58,6 +58,6 @@
 - **目标系统**: 从 Ubuntu 22.04 升级到 Ubuntu 24.04 LTS。
 - **核心功能**: 移除了通用开发工具配置，专注于 AI 图像生成环境。
 - **依赖管理**: 移除了 proxychains4 等不需要的依赖，添加了 CUDA、PyTorch 等 AI 相关依赖。
-- **脚本结构**: 移除了 setup_git.sh、setup_wsl.sh 等脚本，添加了 setup_CUDAToolkit.sh、setup_pytorch.sh 等 AI 相关脚本。
+- **脚本结构**: 移除了 setup_git.sh、setup_wsl.sh 等脚本，添加了 setup_cudatoolkit.sh、setup_pytorch.sh 等 AI 相关脚本。
 - **配置优化**: 更新了 Python 版本为 3.12，添加了 CUDA 12.8 等配置。
 - **GitHub 集成**: 添加了 GitHub Actions 自动编译预编译 wheel 包的功能。
