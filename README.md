@@ -22,111 +22,14 @@
     - **Triton**: 自动安装 Triton 3.4.0 性能优化库
     - **GitHub Actions**: 自动编译预编译 wheel 包，加速安装过程
 
-## 🖥 WSL2 基础系统初始化
+## � 快速开始
 
-在使用本脚本之前，需要先创建 WSL2 基础系统。以下是完整的初始化步骤：
-
-### 1. 目录创建
-```cmd
-mkdir D:\Backup -Force
-mkdir D:\WSL2\Comfyui -Force
-```
-
-### 2. 导入基础系统
-
-#### 2.1 下载 Ubuntu 24.04 基础系统
-
-**方法 1：从 Microsoft 官方下载（推荐）**
-
-1. 访问下载页面：
-   ```
-   https://aka.ms/wslubuntu2404
-   ```
-
-2. 下载 AppxBundle 文件：
-   ```
-   https://wslstorestorage.blob.core.windows.net/wslblob/Ubuntu2404-240425.AppxBundle
-   ```
-
-3. 将 AppxBundle 改为 ZIP：
-   - 下载后，将文件名从 `Ubuntu2404-240425.AppxBundle` 改为 `Ubuntu2404-240425.zip`
-   - Windows 会自动识别 ZIP 文件
-
-4. 解压 ZIP 文件：
-   - 解压后会看到 `Ubuntu_2404.0.5.0_x64.appx` 文件
-   - 将 `.appx` 扩展名改为 `.zip` 后解压即可
-
-**方法 2：使用 PowerShell 下载**
-
-```powershell
-# 下载并重命名为 ZIP
-Invoke-WebRequest -Uri "https://wslstorestorage.blob.core.windows.net/wslblob/Ubuntu2404-240425.AppxBundle" -OutFile "Ubuntu2404-240425.zip"
-
-# 导入 WSL
-wsl --import Ubuntu2404 "D:\WSL2\Comfyui" "D:\Backup\Ubuntu2404-240425.zip" --version 2
-```
-
-#### 2.2 使用 install.tar.gz 导入（如果您已有）
-
-```cmd
-wsl --import Comfyui "D:\WSL2\Comfyui" "D:\Backup\install.tar.gz" --version 2
-```
-
-**说明**：
-- `install.tar.gz` 就是基础系统的压缩包
-- 包含完整的 Ubuntu 24.04 系统文件
-- 使用 `--version 2` 参数导入
-
-### 3. 首次登录与用户配置
-
-#### 3.1 以 root 身份首次登录
-```cmd
-wsl -d Comfyui
-```
-
-#### 3.2 执行 WSL2 基础系统初始化脚本
-```bash
-cd /path/to/setup-wsl2-ubuntu
-sudo bash scripts/init_wsl_base.sh
-```
-
-**注意**：此脚本会自动完成以下操作：
-- 授予用户 sudo 权限
-- 配置默认登录用户
-- 配置安全设置（systemd、禁用自动挂载、禁用 Windows PATH）
-- 配置 fstab（只映射 E 盘）
-- 创建挂载点
-- 清理历史记录
-
-#### 3.3 终止指定发行版
-```cmd
-wsl -t Comfyui
-```
-
-#### 3.4 测试 ubuntu 用户权限
-```bash
-sudo apt update
-sudo apt upgrade
-```
-
-#### 3.4 测试 ubuntu 用户权限
-```cmd
-wsl --export Comfyui D:\backup\Ubuntu-24.04.tar
-```
-
-### 5. 导入系统（可选）
-```cmd
-wsl --import Comfyui "D:\WSL2\Comfyui" "D:\backup\Ubuntu-24.04.tar" --version 2
-```
-
-## 🚀 快速开始
-
-1.  **赋予执行权限**
+1. **赋予执行权限**
     ```bash
     chmod +x main.sh scripts/*.sh
     ```
 
-2.  **配置 Git 用户信息**
+2. **配置 Git 用户信息**
     复制配置文件模板并填入您的姓名和邮箱：
     ```bash
     cp git.config.example git.config
@@ -138,7 +41,7 @@ wsl --import Comfyui "D:\WSL2\Comfyui" "D:\backup\Ubuntu-24.04.tar" --version 2
         name = Your Name
     ```
 
-3.  **一键全量配置** (推荐)
+3. **一键全量配置** (推荐)
     ```bash
     ./main.sh --all
     ```
@@ -187,7 +90,11 @@ wsl --import Comfyui "D:\WSL2\Comfyui" "D:\backup\Ubuntu-24.04.tar" --version 2
     ├── setup_comfyui.sh
     ├── setup_sageattention.sh
     ├── setup_flashattention.sh
-    └── setup_sam2.sh
+    ├── setup_sam2.sh
+    ├── init_wsl_base.sh
+    ├── build_sageattention.sh
+    ├── build_flashattention.sh
+    └── build_sam2.sh
 ```
 
 ## ⚠️ 注意事项
@@ -256,7 +163,7 @@ python ~/test_sageattention.py
 - **编译产物**：编译好的 wheel 包会作为 Artifacts 保存 90 天
 - **下载优先**：安装脚本会优先尝试下载预编译 wheel，失败时自动回退到本地编译
 
-查看编译状态和下载产物：https://github.com/andangel/setup-wsl2-ubuntu/actions
+查看编译状态和下载产物：https://github.com/andangel/wsl2-ubuntu-comfyui/actions
 
 ## 📝 许可证
 
