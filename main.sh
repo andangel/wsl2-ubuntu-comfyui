@@ -51,7 +51,6 @@ while [[ $# -gt 0 ]]; do
         --all)
             ./scripts/setup_apt.sh
             ./scripts/install_deps.sh
-            ./scripts/setup_wsl.sh
             ./scripts/setup_miniconda.sh
             ./scripts/setup_cuda.sh
             ./scripts/setup_pytorch.sh
@@ -67,10 +66,6 @@ while [[ $# -gt 0 ]]; do
             ;;
         --deps)
             ./scripts/install_deps.sh
-            shift
-            ;;
-        --wsl)
-            ./scripts/setup_wsl.sh
             shift
             ;;
         --conda)
