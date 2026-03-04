@@ -34,7 +34,7 @@ mkdir D:\WSL2\Comfyui -Force
 
 ### 2. 导入基础系统
 ```cmd
-wsl --import Ubuntu24 "D:\WSL2\Comfyui" "D:\Backup\install.tar.gz" --version 2
+wsl --import Comfyui "D:\WSL2\Comfyui" "D:\Backup\install.tar.gz" --version 2
 ```
 
 ### 3. 首次登录与用户配置
@@ -44,30 +44,26 @@ wsl --import Ubuntu24 "D:\WSL2\Comfyui" "D:\Backup\install.tar.gz" --version 2
 wsl -d Comfyui
 ```
 
-#### 3.2 授予用户 sudo 权限
+#### 3.2 执行 WSL2 基础系统初始化脚本
 ```bash
-usermod -aG sudo ubuntu
+cd /path/to/setup-wsl2-ubuntu
+sudo bash scripts/init_wsl_base.sh
 ```
 
-#### 3.3 配置默认登录用户
-```bash
-nano /etc/wsl.conf
-```
+**注意**：此脚本会自动完成以下操作：
+- 授予用户 sudo 权限
+- 配置默认登录用户
+- 配置安全设置（systemd、禁用自动挂载、禁用 Windows PATH）
+- 配置 fstab（只映射 E 盘）
+- 创建挂载点
+- 清理历史记录
 
-填入以下内容：
-```ini
-[user]
-default=ubuntu
-```
-
-保存并退出（nano 中按 Ctrl+O 回车保存，Ctrl+X 退出）
-
-#### 3.4 终止指定发行版
+#### 3.3 终止指定发行版
 ```cmd
 wsl -t Comfyui
 ```
 
-#### 3.5 测试 ubuntu 用户权限
+#### 3.4 测试 ubuntu 用户权限
 ```bash
 sudo apt update
 sudo apt upgrade
