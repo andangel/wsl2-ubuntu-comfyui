@@ -134,7 +134,6 @@ cd wsl2-ubuntu-comfyui
 .
 ├── main.sh                 # 主入口脚本，负责参数解析和流程控制
 ├── config.sh               # 配置文件，定义全局变量
-├── git.config.example      # Git 配置文件模板
 ├── CLAUDE.md               # 项目上下文与开发规范文档
 ├── lib/
 │   └── utils.sh            # 通用工具库（日志、颜色、交互确认）
