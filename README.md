@@ -33,9 +33,49 @@ mkdir D:\WSL2\Comfyui -Force
 ```
 
 ### 2. 导入基础系统
+
+#### 2.1 下载 Ubuntu 24.04 基础系统
+
+**方法 1：从 Microsoft 官方下载（推荐）**
+
+1. 访问下载页面：
+   ```
+   https://aka.ms/wslubuntu2404
+   ```
+
+2. 下载 AppxBundle 文件：
+   ```
+   https://wslstorestorage.blob.core.windows.net/wslblob/Ubuntu2404-240425.AppxBundle
+   ```
+
+3. 将 AppxBundle 改为 ZIP：
+   - 下载后，将文件名从 `Ubuntu2404-240425.AppxBundle` 改为 `Ubuntu2404-240425.zip`
+   - Windows 会自动识别 ZIP 文件
+
+4. 解压 ZIP 文件：
+   - 解压后会看到 `Ubuntu_2404.0.5.0_x64.appx` 文件
+   - 将 `.appx` 扩展名改为 `.zip` 后解压即可
+
+**方法 2：使用 PowerShell 下载**
+
+```powershell
+# 下载并重命名为 ZIP
+Invoke-WebRequest -Uri "https://wslstorestorage.blob.core.windows.net/wslblob/Ubuntu2404-240425.AppxBundle" -OutFile "Ubuntu2404-240425.zip"
+
+# 导入 WSL
+wsl --import Ubuntu2404 "D:\WSL2\Comfyui" "D:\Backup\Ubuntu2404-240425.zip" --version 2
+```
+
+#### 2.2 使用 install.tar.gz 导入（如果您已有）
+
 ```cmd
 wsl --import Comfyui "D:\WSL2\Comfyui" "D:\Backup\install.tar.gz" --version 2
 ```
+
+**说明**：
+- `install.tar.gz` 就是基础系统的压缩包
+- 包含完整的 Ubuntu 24.04 系统文件
+- 使用 `--version 2` 参数导入
 
 ### 3. 首次登录与用户配置
 
