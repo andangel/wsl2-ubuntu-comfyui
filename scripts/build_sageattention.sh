@@ -11,11 +11,12 @@ CUDA_VERSION="12.8"
 
 # Install build dependencies
 echo "Installing build dependencies..."
-pip install wheel ninja packaging torch==${PYTORCH_VERSION} torchvision --index-url https://download.pytorch.org/whl/cu${CUDA_VERSION/./}
+pip install wheel ninja packaging --index-url https://pypi.org/simple
+pip install torch==${PYTORCH_VERSION} torchvision --index-url https://download.pytorch.org/whl/cu${CUDA_VERSION/./}
 
 # Install triton dependency
 echo "Installing triton>=3.0.0..."
-pip install "triton>=3.0.0"
+pip install "triton>=3.0.0" --index-url https://pypi.org/simple
 
 # Clone repository
 if [ ! -d "SageAttention" ]; then

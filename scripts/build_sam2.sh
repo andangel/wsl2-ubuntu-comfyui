@@ -11,7 +11,8 @@ CUDA_VERSION="12.8"
 
 # Install build dependencies
 echo "Installing build dependencies..."
-pip install wheel ninja packaging torch==${PYTORCH_VERSION} torchvision --index-url https://download.pytorch.org/whl/cu${CUDA_VERSION/./}
+pip install wheel ninja packaging --index-url https://pypi.org/simple
+pip install torch==${PYTORCH_VERSION} torchvision --index-url https://download.pytorch.org/whl/cu${CUDA_VERSION/./}
 
 # Clone repository
 if [ ! -d "sam2" ]; then
