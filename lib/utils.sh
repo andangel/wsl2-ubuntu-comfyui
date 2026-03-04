@@ -20,7 +20,7 @@ check_and_confirm() {
     
     log_info "检查状态: $description..."
     
-    # If check command returns 0 (true), it means that component is already present/configured
+    # 如果检查命令返回 0 (true)，表示组件已经存在/已配置
     if eval "$2"; then
         log_warn "$description 似乎已配置。"
         read -p "是否重新配置/覆盖？[y/N] " response
