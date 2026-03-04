@@ -69,44 +69,7 @@ sudo apt update
 sudo apt upgrade
 ```
 
-#### 3.6 切换至 root 用户清理历史记录
-```cmd
-wsl -d Comfyui -u root
-```
-
-```bash
-# 清理历史记录
-history -c && history -w
-```
-
-#### 3.7 安全设置
-```bash
-nano /etc/wsl.conf
-```
-
-填入以下内容：
-```ini
-# 启用systemd
-[boot]
-systemd=true
-# 设置默认用户为ubuntu
-[user]
-default=ubuntu
-# 禁用自动挂载Windows文件系统
-[automount]
-enabled = false
-# 禁用Windows PATH 环境变量追加
-[interop]
-appendWindowsPath = false
-```
-
-```bash
-sudo nano /etc/fstab
-# 填入以下内容，只映射E盘
-E: /mnt/e drvfs defaults 0 0
-```
-
-### 4. 系统备份
+#### 3.4 测试 ubuntu 用户权限
 ```cmd
 wsl --export Comfyui D:\backup\Ubuntu-24.04.tar
 ```
