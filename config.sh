@@ -4,7 +4,6 @@
 DEB_DEPS="unzip proxychains4 build-essential gcc g++ make wget"
 
 # Default Configuration
-SSH_PORT_DEFAULT=8022
 
 # Mirrors
 MIRROR_UBUNTU="https://mirrors.tuna.tsinghua.edu.cn/ubuntu/"
