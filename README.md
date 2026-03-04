@@ -22,6 +22,104 @@
     - **Triton**: 自动安装 Triton 3.4.0 性能优化库
     - **GitHub Actions**: 自动编译预编译 wheel 包，加速安装过程
 
+## 🖥 WSL2 基础系统初始化
+
+在使用本脚本之前，需要先创建 WSL2 基础系统。以下是完整的初始化步骤：
+
+### 1. 目录创建
+```cmd
+mkdir D:\Backup -Force
+mkdir D:\WSL2\Comfyui -Force
+```
+
+### 2. 导入基础系统
+```cmd
+wsl --import Ubuntu24 "D:\WSL2\Comfyui" "D:\Backup\install.tar.gz" --version 2
+```
+
+### 3. 首次登录与用户配置
+
+#### 3.1 以 root 身份首次登录
+```cmd
+wsl -d Comfyui
+```
+
+#### 3.2 授予用户 sudo 权限
+```bash
+usermod -aG sudo ubuntu
+```
+
+#### 3.3 配置默认登录用户
+```bash
+nano /etc/wsl.conf
+```
+
+填入以下内容：
+```ini
+[user]
+default=ubuntu
+```
+
+保存并退出（nano 中按 Ctrl+O 回车保存，Ctrl+X 退出）
+
+#### 3.4 终止指定发行版
+```cmd
+wsl -t Comfyui
+```
+
+#### 3.5 测试 ubuntu 用户权限
+```bash
+sudo apt update
+sudo apt upgrade
+```
+
+#### 3.6 切换至 root 用户清理历史记录
+```cmd
+wsl -d Comfyui -u root
+```
+
+```bash
+# 清理历史记录
+history -c && history -w
+```
+
+#### 3.7 安全设置
+```bash
+nano /etc/wsl.conf
+```
+
+填入以下内容：
+```ini
+# 启用systemd
+[boot]
+systemd=true
+# 设置默认用户为ubuntu
+[user]
+default=ubuntu
+# 禁用自动挂载Windows文件系统
+[automount]
+enabled = false
+# 禁用Windows PATH 环境变量追加
+[interop]
+appendWindowsPath = false
+```
+
+```bash
+sudo nano /etc/fstab
+# 填入以下内容，只映射E盘
+E: /mnt/e drvfs defaults 0 0
+```
+
+### 4. 系统备份
+```cmd
+wsl --export Comfyui D:\backup\Ubuntu-24.04.tar
+```
+
+### 5. 导入系统（可选）
+```cmd
+wsl --import Comfyui "D:\WSL2\Comfyui" "D:\backup\Ubuntu-24.04.tar" --version 2
+```
+
 ## 🚀 快速开始
 
 1.  **赋予执行权限**
