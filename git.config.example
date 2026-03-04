@@ -1,0 +1,15 @@
+[user]
+        email = 
+        name = 
+[core]
+        editor = vim
+        quotepath = false
+        autocrlf = input
+[i18n]
+        logoutputencoding = utf-8
+        commitencoding = utf-8
+[filter "lfs"]
+        clean = git-lfs clean -- %f
+        smudge = git-lfs smudge -- %f
+        process = git-lfs filter-process
+        required = true
