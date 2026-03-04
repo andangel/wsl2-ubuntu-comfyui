@@ -4,6 +4,10 @@ set -e
 
 echo "Building SageAttention wheel..."
 
+# Install triton dependency
+echo "Installing triton>=3.0.0..."
+pip install "triton>=3.0.0" || echo "Warning: triton installation failed"
+
 # Clone repository
 if [ ! -d "SageAttention" ]; then
     git clone https://github.com/thu-ml/SageAttention.git
