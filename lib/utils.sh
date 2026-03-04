@@ -18,18 +18,18 @@ log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
 check_and_confirm() {
     local description="$1"
     
-    log_info "检查状态: $description..."
+    log_info "Checking status: $description..."
     
-    # If the check command returns 0 (true), it means the component is already present/configured
+    # If check command returns 0 (true), it means that component is already present/configured
     if eval "$2"; then
-        log_warn "$description 似乎已配置。"
-        read -p "是否重新配置/覆盖？[y/N] " response
+        log_warn "$description seems already configured."
+        read -p "Reconfigure/overwrite? [y/N] " response
         case "$response" in
             [yY][eE][sS]|[yY]) 
                 return 0 
                 ;;
             *)
-                log_info "跳过 $description。"
+                log_info "Skipping $description."
                 return 1
                 ;;
         esac
@@ -41,13 +41,13 @@ check_and_confirm() {
 
 # Network error handler
 handle_net_error() {
-    log_error "网络请求失败！"
-    log_error "建议配置本地代理（如 proxychains4）后重试。"
-    log_info "提示: 您可以使用 './main.sh --deps' 安装 proxychains4。"
-    log_info "如果已安装，请检查代理配置是否正确。"
-    log_info "例如，编辑 /etc/proxychains4.conf 并取消注释 socks4 127.0.0.1 9050。"
-    log_info "如果您使用的是不同的代理端口，请相应修改。"
-    log_info "例如，使用 socks5 127.0.0.1 7891"
-    log_info "然后运行: proxychains4 ./main.sh ..."
+    log_error "Network request failed!"
+    log_error "Suggest configuring local proxy (e.g., proxychains4) and retry."
+    log_info "Tip: You can use './main.sh --deps' to install proxychains4."
+    log_info "If already installed, please check if proxy configuration is correct."
+    log_info "For example, edit /etc/proxychains4.conf and uncomment socks4 127.0.0.1 9050."
+    log_info "If you are using a different proxy port, modify accordingly."
+    log_info "For example, use socks5 127.0.0.1 7891"
+    log_info "Then run: proxychains4 ./main.sh ..."
     exit 1
 }
