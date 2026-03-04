@@ -22,7 +22,7 @@ help() {
     echo "  --apt              配置 APT 镜像源 (清华源)"
     echo "  --deps             安装基础依赖 (unzip, proxychains4, build-essential)"
     echo "  --conda            安装/配置 Miniconda & Python $PYTHON_VERSION"
-    echo "  --cuda             安装 CUDA Toolkit ${CUDA_VERSION}"
+    echo "  --cudatoolkit      安装 CUDA Toolkit ${CUDA_VERSION}"
     echo "  --pytorch          安装 PyTorch ${PYTORCH_VERSION} (CUDA 12.8)"
     echo "  --comfyui          安装 ComfyUI 及依赖"
     echo "  --sageattention    安装 SageAttention ${SAGEATTENTION_VERSION}"
@@ -52,12 +52,8 @@ while [[ $# -gt 0 ]]; do
             ./scripts/setup_apt.sh
             ./scripts/install_deps.sh
             ./scripts/setup_miniconda.sh
-            ./scripts/setup_cuda.sh
             ./scripts/setup_pytorch.sh
             ./scripts/setup_comfyui.sh
-            ./scripts/setup_sageattention.sh
-            ./scripts/setup_flashattention.sh
-            ./scripts/setup_sam2.sh
             shift
             ;;
         --apt)
@@ -72,8 +68,8 @@ while [[ $# -gt 0 ]]; do
             ./scripts/setup_miniconda.sh
             shift
             ;;
-        --cuda)
-            ./scripts/setup_cuda.sh
+        --cudatoolkit)
+            ./scripts/setup_CUDAToolkit.sh
             shift
             ;;
         --pytorch)

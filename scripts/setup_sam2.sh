@@ -4,8 +4,10 @@
 source "$(dirname "$0")/../config.sh"
 source "$(dirname "$0")/../lib/utils.sh"
 
-SAM2_VERSION="1.0"
-SAM2_DIR="$HOME/sam2"
+# Use variables from config.sh
+SAM2_VERSION="${SAM2_VERSION:-1.0}"
+SAM2_DIR="${SAM2_DIR:-$HOME/sam2}"
+SAM2_REPO="${SAM2_REPO:-https://github.com/facebookresearch/sam2.git}"
 
 setup_sam2() {
     if check_and_confirm "SAM2" "[ -d \"$SAM2_DIR\" ]"; then
@@ -13,7 +15,7 @@ setup_sam2() {
 
         # Try to download precompiled wheel from GitHub Actions
         local wheel_name="sam_2-${SAM2_VERSION}-cp312-cp312-linux_x86_64.whl"
-        local download_url="https://github.com/andangel/setup-wsl2-ubuntu/releases/download/latest/${wheel_name}"
+        local download_url="https://github.com/andangel/wsl2-ubuntu-comfyui/releases/download/latest/${wheel_name}"
         local temp_wheel="/tmp/${wheel_name}"
 
         log_info "尝试下载预编译的 SAM2 wheel..."
@@ -26,6 +28,14 @@ setup_sam2() {
             log_success "SAM2 ${SAM2_VERSION} 安装完成（使用预编译 wheel）。"
         else
             log_warn "未找到预编译 wheel，开始本地编译..."
+
+            # Check if CUDA Toolkit is installed
+            if ! command -v nvcc &> /dev/null; then
+                log_error "CUDA Toolkit 未安装，本地编译需要 CUDA Toolkit。"
+                log_info "在 WSL 环境中，编译时需要 CUDA Toolkit，推理时使用 Windows 的 CUDA 驱动。"
+                log_info "请先运行 './main.sh --cudatoolkit' 安装 CUDA Toolkit，或确保已手动安装 CUDA Toolkit。"
+                exit 1
+            fi
 
             # Clone SAM2 repository
             if [ ! -d "$SAM2_DIR" ]; then
@@ -40,7 +50,11 @@ setup_sam2() {
             cd ${SAM2_DIR}
 
             # Install build dependencies
-            pip install wheel ninja packaging
+            pip install wheel ninja packaging torch==${PYTORCH_VERSION} torchvision
+
+            # Set build environment variables for memory optimization and CUDA
+            export MAX_JOBS=4
+            export TORCH_CUDA_ARCH_LIST="8.9"
 
             # Build wheel package
             log_info "构建 SAM2 wheel 包..."

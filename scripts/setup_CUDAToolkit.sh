@@ -4,7 +4,7 @@
 source "$(dirname "$0")/../config.sh"
 source "$(dirname "$0")/../lib/utils.sh"
 
-setup_cuda() {
+setup_CUDAToolkit() {
     local is_configured="grep -q 'cuda-12.8' ~/.bashrc 2>/dev/null"
 
     if check_and_confirm "CUDA Toolkit ${CUDA_VERSION}" "$is_configured"; then
@@ -43,4 +43,4 @@ setup_cuda() {
     fi
 }
 
-setup_cuda
+setup_CUDAToolkit

@@ -1,41 +1,72 @@
-# WSL2 基础系统初始化指南
+# Ubuntu 24.04 LTS 安装与部署
 
-本指南用于在 Windows 上创建和配置 WSL2 Ubuntu 24.04 基础系统。
+在使用本脚本之前，需要先创建 WSL2 基础系统。以下是完整的初始化步骤：
 
-## 📋 初始化步骤
-
-### 1. 目录创建
+## 1. 目录创建
 
 ```powershell
 mkdir D:\Backup -Force
-mkdir D:\WSL2\Comfyui -Force
+mkdir D:\WSL2\ -Force
 ```
 
-### 2. 下载 Ubuntu 24.04 基础系统
+## 2. 导入基础系统
 
-**下载地址**：
-```
-https://wslstorestorage.blob.core.windows.net/wslblob/Ubuntu2404-240425.AppxBundle
-```
+### 2.1 下载 Ubuntu 24.04 基础系统
 
-**下载并重命名**：
-```powershell
-# 下载并重命名为 ZIP 格式
-Invoke-WebRequest -Uri "https://wslstorestorage.blob.core.windows.net/wslblob/Ubuntu2404-240425.AppxBundle" -OutFile "D:\Backup\Ubuntu2404-240425.zip"
-```
+[Ubuntu 24.04 下载地址](https://wslstorestorage.blob.core.windows.net/wslblob/Ubuntu2404-240425.AppxBundle)
 
-### 3. 解压基础系统
+将下载的 AppxBundle 文件重命名为 ZIP 格式：
 
 ```powershell
-# 解压 Ubuntu2404-240425.zip 文件
-Expand-Archive -LiteralPath "D:\Backup\Ubuntu2404-240425.zip" -DestinationPath "D:\Backup"
+Rename-Item -Path Ubuntu2404-240425.AppxBundle -NewName Ubuntu2404-240425.zip
 ```
 
-### 4. 导入基础系统
+解压 Ubuntu2404-240425.zip 文件：
 
 ```powershell
-# 导入到 WSL2
-wsl --import Ubuntu2404 "D:\WSL2\Comfyui" "D:\Backup\Ubuntu2404-240425\install.tar.gz" --version 2
+Expand-Archive -Path Ubuntu2404-240425.zip -DestinationPath D:\WSL2\Ubuntu2404-240425
+```
+
+进入 Ubuntu2404-240425 文件夹：
+
+```powershell
+cd Ubuntu2404-240425
+```
+
+将 Ubuntu_2404.0.5.0_x64.appx 文件重命名为 Ubuntu_2404.0.5.0_x64.zip：
+
+```powershell
+Rename-Item -Path Ubuntu_2404.0.5.0_x64.appx -NewName Ubuntu_2404.0.5.0_x64.zip
+```
+
+解压 Ubuntu_2404.0.5.0_x64.zip 文件：
+
+```powershell
+Expand-Archive -Path Ubuntu_2404.0.5.0_x64.zip -DestinationPath D:\WSL2\Ubuntu2404-240425\Ubuntu_2404.0.5.0_x64
+```
+
+进入 Ubuntu_2404.0.5.0_x64 文件夹：
+
+```powershell
+cd Ubuntu_2404.0.5.0_x64
+```
+
+将 Ubuntu_2404.0.5.0_x64 文件夹中的 install.tar.gz 复制到 D:\Backup 文件夹：
+
+```powershell
+Copy-Item -Path install.tar.gz -Destination "D:\Backup"
+```
+
+删除 D:\WSL2\Ubuntu2404-240425 文件夹：
+
+```powershell
+Remove-Item -Path D:\WSL2\Ubuntu2404-240425 -Recurse -Force
+```
+
+### 2.2 使用 install.tar.gz 导入（如果您已有）
+
+```powershell
+wsl --import Comfyui "D:\WSL2\Comfyui" "D:\Backup\install.tar.gz" --version 2
 ```
 
 **说明**：
@@ -43,66 +74,63 @@ wsl --import Ubuntu2404 "D:\WSL2\Comfyui" "D:\Backup\Ubuntu2404-240425\install.t
 - 包含完整的 Ubuntu 24.04 系统文件
 - 使用 `--version 2` 参数导入
 
-### 5. 首次登录与用户配置
+## 3. 首次登录与用户配置
 
-#### 5.1 以 root 身份首次登录
-
-```powershell
-wsl -d Ubuntu2404
-```
-
-#### 5.2 执行 WSL2 基础系统初始化脚本
-
-```bash
-cd /path/to/setup-wsl2-ubuntu
-sudo bash scripts/init_wsl_base.sh
-```
-
-**注意**：此脚本需要以 root 身份在 WSL 内部执行。
-
-**脚本会自动完成以下操作**：
-- ✅ 授予 ubuntu 用户 sudo 权限
-- ✅ 配置默认登录用户为 ubuntu
-- ✅ 配置安全设置（systemd、禁用自动挂载、禁用 Windows PATH）
-- ✅ 配置 fstab（只映射 E 盘到 /mnt/e）
-- ✅ 创建挂载点
-- ✅ 清理历史记录
-
-#### 5.3 终止 WSL 实例
+### 3.1 给 ubuntu 用户添加 sudo 权限
 
 ```powershell
-wsl --terminate Ubuntu2404
+wsl -d Comfyui -u root -e usermod -aG sudo ubuntu
 ```
 
-#### 5.4 重新登录验证
+### 3.2 默认让 ubuntu 用户登录
 
 ```powershell
-wsl -d Ubuntu2404
+wsl -u root -e sh -c "echo '[user]' >> /etc/wsl.conf && echo 'default=ubuntu' >> /etc/wsl.conf"
 ```
 
-#### 5.5 测试 ubuntu 用户权限
+### 3.3 重启 WSL 生效
 
-```bash
-sudo apt update
-sudo apt upgrade
+```powershell
+wsl --terminate Comfyui
 ```
 
-### 6. 克隆项目
+### 3.4 克隆项目
+
+在开始菜单应该能看到名为 Comfyui 的快捷方式，点击进入 WSL 系统后执行以下命令：
 
 ```bash
 git clone https://github.com/andangel/wsl2-ubuntu-comfyui.git
 cd wsl2-ubuntu-comfyui
 ```
 
-## 📝 后续步骤
+## 4. WSL管理命令
 
-基础系统初始化完成后，可以运行主脚本进行环境配置：
+查看 WSL 实例列表：
 
-```bash
-chmod +x main.sh scripts/*.sh
-./main.sh --all
+```powershell
+wsl --list --verbose
 ```
 
-## 🎯 初始化完成
+备份 Comfyui WSL 实例：
 
-WSL2 基础系统初始化完成！现在可以开始配置 ComfyUI 环境。
+```powershell
+wsl --export Comfyui "D:\Backup\Comfyui-240425.tar.gz"
+```
+
+停止 Comfyui WSL 实例：
+
+```powershell
+wsl --terminate Comfyui
+```
+
+删除 Comfyui WSL 实例：
+
+```powershell
+wsl --unregister Comfyui
+```
+
+重新导入 Comfyui WSL 实例：
+
+```powershell
+wsl --import Comfyui "D:\WSL2\Comfyui" "Comfyui-240425.tar.gz" --version 2
+```

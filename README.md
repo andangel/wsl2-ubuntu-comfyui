@@ -8,7 +8,7 @@
 - **模块化设计**：支持一键全量安装，也支持按需单独配置特定组件。
 - **幂等性**：内置状态检查，重复运行会提示确认，避免误覆盖现有配置。
 - **AI 工具链集成**：
-    - **基础依赖**: 自动安装 unzip、proxychains4、build-essential 等常用工具。
+    - **基础依赖**: 自动安装 unzip、build-essential 等常用工具。
     - **Python**: Miniconda3 (默认创建 Python 3.12 `comfyui` 环境)
     - **CUDA**: 自动安装 CUDA Toolkit 12.8
     - **PyTorch**: 安装 PyTorch 2.8.0 (CUDA 12.8 版本)
@@ -21,7 +21,7 @@
 
 ## 🖥 WSL2 基础系统初始化
 
-详细的 WSL2 基础系统初始化步骤请参考：[init-wsl2-ubuntu.md](init-wsl2-ubuntu.md)
+在使用本脚本之前，需要先创建 WSL2 基础系统。详细步骤请参考 [init-wsl2-ubuntu.md](init-wsl2-ubuntu.md) 文件。
 
 ## 🚀 快速开始
 
@@ -29,7 +29,6 @@
     ```bash
     chmod +x main.sh scripts/*.sh
     ```
-
 
 2.  **一键全量配置** (推荐)
     ```bash
@@ -44,7 +43,7 @@
 | :--- | :--- | :--- |
 | **全量配置** | `./main.sh --all` | 执行所有初始化任务 |
 | **APT 换源** | `./main.sh --apt` | 备份原源，替换为清华源并更新缓存 |
-| **基础依赖** | `./main.sh --deps` | 安装 unzip、proxychains4、build-essential 等基础工具 |
+| **基础依赖** | `./main.sh --deps` | 安装 unzip、build-essential 等基础工具 |
 | **Python (Conda)** | `./main.sh --conda` | 安装 Miniconda & 创建 `comfyui` 环境 |
 | **CUDA** | `./main.sh --cuda` | 安装 CUDA Toolkit 12.8 |
 | **PyTorch** | `./main.sh --pytorch` | 安装 PyTorch 2.8.0 (CUDA 12.8) |
@@ -64,15 +63,14 @@
 ├── main.sh                 # 主入口脚本，负责参数解析和流程控制
 ├── config.sh               # 配置文件，定义全局变量
 ├── CLAUDE.md               # 项目上下文与开发规范文档
+├── init-wsl2-ubuntu.md     # WSL2 基础系统初始化指南
 ├── lib/
 │   └── utils.sh            # 通用工具库（日志、颜色、交互确认）
 └── scripts/                # 独立组件安装脚本
     ├── setup_apt.sh
     ├── install_deps.sh
-    ├── setup_wsl.sh
-    ├── setup_git.sh
     ├── setup_miniconda.sh
-    ├── setup_cuda.sh
+    ├── setup_CUDAToolkit.sh
     ├── setup_pytorch.sh
     ├── setup_comfyui.sh
     ├── setup_sageattention.sh
@@ -82,13 +80,11 @@
 
 ## ⚠️ 注意事项
 
-
-2.  **Shell 重启**：脚本执行完毕后，建议重启终端或执行 `source ~/.bashrc`，以确保环境变量立即生效。
-3.  **WSL 重启**：运行 `--wsl` 后，需要执行 `wsl --shutdown` 重启 WSL 实例以使配置生效。
-4.  **CUDA 安装**：CUDA Toolkit 12.8 安装需要较长时间，请耐心等待。
-5.  **预编译 Wheel**：脚本会优先从 GitHub Releases 下载预编译的 wheel 包（SageAttention、FlashAttention、SAM2），如果下载失败则会自动进行本地编译。
-6.  **本地编译**：如果预编译 wheel 不可用，脚本会自动进行本地编译，确保已安装 `build-essential`、`gcc`、`g++`、`make` 等编译工具。
-7.  **GPU 要求**：本环境需要 NVIDIA GPU 支持，建议显存 >= 8GB。
+1.  **Shell 重启**：脚本执行完毕后，建议重启终端或执行 `source ~/.bashrc`，以确保环境变量立即生效。
+2.  **CUDA 安装**：CUDA Toolkit 12.8 安装需要较长时间，请耐心等待。
+3.  **预编译 Wheel**：脚本会优先从 GitHub Releases 下载预编译的 wheel 包（SageAttention、FlashAttention、SAM2），如果下载失败则会自动进行本地编译。
+4.  **本地编译**：如果预编译 wheel 不可用，脚本会自动进行本地编译，确保已安装 `build-essential`、`gcc`、`g++`、`make` 等编译工具。
+5.  **GPU 要求**：本环境需要 NVIDIA GPU 支持，建议显存 >= 8GB。
 
 ## 🎯 启动 ComfyUI
 
@@ -146,7 +142,7 @@ python ~/test_sageattention.py
 - **编译产物**：编译好的 wheel 包会作为 Artifacts 保存 90 天
 - **下载优先**：安装脚本会优先尝试下载预编译 wheel，失败时自动回退到本地编译
 
-查看编译状态和下载产物：https://github.com/andangel/setup-wsl2-ubuntu/actions
+查看编译状态和下载产物：https://github.com/andangel/wsl2-ubuntu-comfyui/actions
 
 ## 📝 许可证
 
