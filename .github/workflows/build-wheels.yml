@@ -1,10 +1,6 @@
 name: Build Precompiled Wheels
 
 on:
-  push:
-    branches: [ master, main ]
-  pull_request:
-    branches: [ master, main ]
   workflow_dispatch:
 
 jobs:
@@ -158,7 +154,7 @@ jobs:
   release-wheels:
     runs-on: ubuntu-24.04
     needs: [build-sageattention, build-flashattention, build-sam2]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    if: github.event_name == 'workflow_dispatch'
     
     steps:
     - name: Checkout code
