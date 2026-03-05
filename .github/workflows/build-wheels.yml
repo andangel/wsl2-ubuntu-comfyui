@@ -154,3 +154,55 @@ jobs:
         name: sam2-wheels
         path: dist/*.whl
         retention-days: 90
+
+  release-wheels:
+    runs-on: ubuntu-24.04
+    needs: [build-sageattention, build-flashattention, build-sam2]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Download sageattention wheels
+      uses: actions/download-artifact@v4
+      with:
+        name: sageattention-wheels
+        path: dist
+
+    - name: Download flashattention wheels
+      uses: actions/download-artifact@v4
+      with:
+        name: flashattention-wheels
+        path: dist
+
+    - name: Download sam2 wheels
+      uses: actions/download-artifact@v4
+      with:
+        name: sam2-wheels
+        path: dist
+
+    - name: List downloaded files
+      run: ls -la dist/
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: wheels-${{ github.sha }}
+        name: Precompiled Wheels
+        body: |
+          Precompiled wheel packages for Ubuntu 24.04 (WSL2) ComfyUI Environment
+
+          Available Packages:
+          - SageAttention 2.2.0
+          - FlashAttention 2.8.3
+          - SAM2 1.0
+
+          Installation:
+          The setup scripts will automatically download these wheels. If download fails, they will be compiled locally.
+        files: |
+          dist/*.whl
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
