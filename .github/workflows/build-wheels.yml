@@ -20,10 +20,16 @@ jobs:
       with:
         python-version: '3.12'
 
-    - name: Install system dependencies
+    - name: Install system dependencies and clean disk space
       run: |
+        # Clean disk space before installation
+        sudo apt-get clean
+        sudo rm -rf /var/lib/apt/lists/*
+        sudo rm -rf /tmp/*
+        
+        # Update and install dependencies
         sudo apt-get update
-        sudo apt-get install -y build-essential git wget
+        sudo apt-get install -y --no-install-recommends build-essential git wget
 
     - name: Install CUDA Toolkit
       run: |
@@ -63,10 +69,16 @@ jobs:
       with:
         python-version: '3.12'
 
-    - name: Install system dependencies
+    - name: Install system dependencies and clean disk space
       run: |
+        # Clean disk space before installation
+        sudo apt-get clean
+        sudo rm -rf /var/lib/apt/lists/*
+        sudo rm -rf /tmp/*
+        
+        # Update and install dependencies
         sudo apt-get update
-        sudo apt-get install -y build-essential git wget
+        sudo apt-get install -y --no-install-recommends build-essential git wget
 
     - name: Install CUDA Toolkit
       run: |
@@ -106,10 +118,16 @@ jobs:
       with:
         python-version: '3.12'
 
-    - name: Install system dependencies
+    - name: Install system dependencies and clean disk space
       run: |
+        # Clean disk space before installation
+        sudo apt-get clean
+        sudo rm -rf /var/lib/apt/lists/*
+        sudo rm -rf /tmp/*
+        
+        # Update and install dependencies
         sudo apt-get update
-        sudo apt-get install -y build-essential git wget
+        sudo apt-get install -y --no-install-recommends build-essential git wget
 
     - name: Install CUDA Toolkit
       run: |

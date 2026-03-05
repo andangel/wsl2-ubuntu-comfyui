@@ -29,7 +29,7 @@ cd SageAttention
 export EXT_PARALLEL=4
 export NVCC_APPEND_FLAGS="--threads 8"
 export MAX_JOBS=4
-export TORCH_CUDA_ARCH_LIST="8.0 8.6 8.7 8.9 9.0"
+export TORCH_CUDA_ARCH_LIST="8.9"
 
 # Build wheel
 echo "Building wheel..."

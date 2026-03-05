@@ -23,7 +23,7 @@ cd flash-attention
 
 # Set build environment variables for memory optimization and CUDA architecture
 export MAX_JOBS=4
-export TORCH_CUDA_ARCH_LIST="8.0 8.6 8.7 8.9 9.0"
+export TORCH_CUDA_ARCH_LIST="8.9"
 
 # Build wheel
 echo "Building wheel..."
