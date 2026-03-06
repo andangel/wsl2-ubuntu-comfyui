@@ -142,12 +142,54 @@ if (-not (Test-Path $instanceDir)) {
     Write-Host "[OK] 创建目录: $instanceDir" -ForegroundColor Green
 }
 
-# 检查 install.tar.gz 是否存在
+# 检查 install.tar.gz 是否存在，不存在则尝试从 GitHub Release 下载
 if (-not (Test-Path $InstallTarPath)) {
-    Write-Host "`n[错误] install.tar.gz 未找到于 $InstallTarPath" -ForegroundColor Red
-    Write-Host "请从以下地址下载 Ubuntu 24.04:" -ForegroundColor Yellow
-    Write-Host "https://wslstorestorage.blob.core.windows.net/wslblob/Ubuntu2404-240425.AppxBundle" -ForegroundColor Cyan
-    exit 1
+    Write-Host "`n[提示] 未找到本地 install.tar.gz" -ForegroundColor Yellow
+    
+    # GitHub Release 下载地址
+    $GitHubReleaseUrl = "https://github.com/andangel/wsl2-ubuntu-comfyui/releases/download/v1.0.0/install.tar.gz"
+    $DownloadPath = $InstallTarPath
+    
+    Write-Host "是否从 GitHub Release 自动下载？ (Y/N): " -ForegroundColor Cyan -NoNewline
+    $downloadConfirm = Read-Host
+    
+    if ($downloadConfirm -match '^[Yy]') {
+        Write-Host "`n正在下载 install.tar.gz (340 MB)..." -ForegroundColor Cyan
+        Write-Host "下载地址: $GitHubReleaseUrl" -ForegroundColor DarkGray
+        
+        try {
+            # 创建下载目录
+            $downloadDir = Split-Path -Parent $DownloadPath
+            if (-not (Test-Path $downloadDir)) {
+                New-Item -ItemType Directory -Path $downloadDir -Force | Out-Null
+            }
+            
+            # 使用 BITS 或 Invoke-WebRequest 下载
+            if (Get-Command Start-BitsTransfer -ErrorAction SilentlyContinue) {
+                # 使用 BITS 下载（支持断点续传）
+                Start-BitsTransfer -Source $GitHubReleaseUrl -Destination $DownloadPath -DisplayName "下载 install.tar.gz" -Description "WSL2 Ubuntu 24.04 根文件系统"
+            } else {
+                # 使用 Invoke-WebRequest 下载
+                Invoke-WebRequest -Uri $GitHubReleaseUrl -OutFile $DownloadPath -UseBasicParsing
+            }
+            
+            if (Test-Path $DownloadPath) {
+                $fileSize = (Get-Item $DownloadPath).Length / 1MB
+                Write-Host "[OK] 下载完成: $DownloadPath ($([math]::Round($fileSize, 2)) MB)" -ForegroundColor Green
+            } else {
+                throw "下载失败"
+            }
+        } catch {
+            Write-Host "`n[错误] 下载失败: $_" -ForegroundColor Red
+            Write-Host "请手动下载 install.tar.gz 到: $InstallTarPath" -ForegroundColor Yellow
+            Write-Host "下载地址: $GitHubReleaseUrl" -ForegroundColor Cyan
+            exit 1
+        }
+    } else {
+        Write-Host "`n请手动下载 install.tar.gz 到: $InstallTarPath" -ForegroundColor Yellow
+        Write-Host "下载地址: $GitHubReleaseUrl" -ForegroundColor Cyan
+        exit 1
+    }
 }
 
 # 导入实例

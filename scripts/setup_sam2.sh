@@ -22,7 +22,7 @@ setup_sam2() {
 
         # Try to download precompiled wheel from GitHub Actions
         local wheel_name="sam_2-${SAM2_VERSION}-cp312-cp312-linux_x86_64.whl"
-        local download_url="https://github.com/andangel/wsl2-ubuntu-comfyui/releases/download/latest/${wheel_name}"
+        local download_url="https://github.com/andangel/wsl2-ubuntu-comfyui/releases/download/wheels/${wheel_name}"
         local temp_wheel="/tmp/${wheel_name}"
 
         log_info "尝试下载预编译的 SAM2 wheel..."

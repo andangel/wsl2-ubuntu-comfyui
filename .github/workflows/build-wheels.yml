@@ -184,7 +184,7 @@ jobs:
     - name: Create Release
       uses: softprops/action-gh-release@v2
       with:
-        tag_name: wheels-${{ github.sha }}
+        tag_name: wheels
         name: Precompiled Wheels
         body: |
           Precompiled wheel packages for Ubuntu 24.04 (WSL2) ComfyUI Environment
