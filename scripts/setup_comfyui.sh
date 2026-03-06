@@ -11,9 +11,13 @@ setup_comfyui() {
     if check_and_confirm "ComfyUI" "[ -d \"$COMFYUI_DIR\" ]"; then
         log_info "正在安装 ComfyUI..."
 
-        # Activate conda environment
-        log_info "激活 conda 环境..."
-        conda activate ${CONDA_ENV_NAME}
+        # Activate conda environment (if not already in it)
+        if [ "$CONDA_DEFAULT_ENV" != "${CONDA_ENV_NAME}" ]; then
+            log_info "激活 conda 环境..."
+            if command -v conda &> /dev/null; then
+                conda activate ${CONDA_ENV_NAME} 2>/dev/null || true
+            fi
+        fi
 
         # Clone ComfyUI repository
         if [ ! -d "$COMFYUI_DIR" ]; then
@@ -32,36 +36,39 @@ setup_comfyui() {
         log_info "安装 Triton ${TRITON_VERSION}..."
         pip install "triton>=${TRITON_VERSION}"
 
-        # Create launch scripts
-        log_info "创建启动脚本..."
+        # 复制 update 目录到用户 home 目录
+        if [ ! -d "$HOME/update" ]; then
+            log_info "复制 update 到用户 home 目录..."
+            cp -r "$(dirname "$0")/../update" "$HOME/"
+            chmod +x "$HOME/update/"*.sh
+            log_info "update 已复制到 $HOME/update"
+        else
+            log_info "update 目录已存在，跳过复制。"
+        fi
 
-        # GPU launch script
-        cat > ~/run_nvidia_gpu.sh <<'EOF'
-#!/bin/bash
+        # 复制启动脚本到用户 home 目录
+        if [ ! -f "$HOME/run_nvidia_gpu.sh" ]; then
+            cp "$(dirname "$0")/../update/run_nvidia_gpu.sh" "$HOME/"
+            chmod +x "$HOME/run_nvidia_gpu.sh"
+            log_info "GPU 启动脚本已复制到 $HOME/run_nvidia_gpu.sh"
+        else
+            log_info "GPU 启动脚本已存在，跳过复制。"
+        fi
 
-# 使用 NVIDIA GPU 运行 ComfyUI
-echo "使用 NVIDIA GPU 启动 ComfyUI..."
-echo "从 Windows 浏览器访问: http://localhost:8188"
-echo "按 Ctrl+C 停止服务器"
+        if [ ! -f "$HOME/run_cpu.sh" ]; then
+            cp "$(dirname "$0")/../update/run_cpu.sh" "$HOME/"
+            chmod +x "$HOME/run_cpu.sh"
+            log_info "CPU 启动脚本已复制到 $HOME/run_cpu.sh"
+        else
+            log_info "CPU 启动脚本已存在，跳过复制。"
+        fi
 
-# 使用系统变量确保在任何目录都能正确运行
-COMFYUI_DIR="$HOME/ComfyUI"
-if [ -d "$COMFYUI_DIR" ]; then
-    cd "$COMFYUI_DIR"
-    python3 main.py --listen 0.0.0.0
-else
-    echo "错误: ComfyUI 目录不存在: $COMFYUI_DIR"
-    exit 1
-fi
-EOF
-        chmod +x ~/run_nvidia_gpu.sh
-        
-        # 添加 ComfyUI 别名到 .bashrc
+        # 添加 ComfyUI 别名到 .bashrc（文件复制完成后再添加）
         if ! grep -q "alias comfyui" ~/.bashrc; then
             cat >> ~/.bashrc << 'EOF'
 
 # ComfyUI alias
-alias comfyui='$HOME/run_nvidia_gpu.sh'
+alias comfyui='bash $HOME/run_nvidia_gpu.sh'
 EOF
             log_info "已添加 ComfyUI 别名到 ~/.bashrc"
             log_info "现在可以在任何目录输入 'comfyui' 启动 ComfyUI"
@@ -82,21 +89,10 @@ EOF
             log_info "ComfyUI 更新别名已存在，跳过添加。"
         fi
 
-        # 复制 update 到用户 home 目录
-        if [ ! -d "$HOME/update" ]; then
-            log_info "复制 update 到用户 home 目录..."
-            cp -r "$(dirname "$0")/../update" "$HOME/"
-            chmod +x "$HOME/update/update_comfyui.sh"
-            chmod +x "$HOME/update/update_comfyui_stable.sh"
-            chmod +x "$HOME/update/update_comfyui_and_python_dependencies.sh"
-            log_info "update 已复制到 $HOME/update"
-        else
-            log_info "update 目录已存在，跳过复制。"
-        fi
-
         log_success "ComfyUI 安装完成。"
         log_info "启动脚本已创建："
         log_info "  GPU 模式: ~/run_nvidia_gpu.sh"
+        log_info "  CPU 模式: ~/run_cpu.sh"
         log_info "访问地址: http://localhost:8188"
         log_info "别名: comfyui (在任何目录输入启动 GPU 模式)"
         log_info "更新别名: comfyui-update (在任何目录输入更新 ComfyUI 稳定版本)"

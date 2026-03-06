@@ -2,6 +2,13 @@
 # 完整更新（包括依赖）
 # 更新ComfyUI和Python依赖的脚本
 
+# 确保 conda 环境已激活
+if [ "$CONDA_DEFAULT_ENV" != "base" ]; then
+    if command -v conda &> /dev/null; then
+        conda activate base 2>/dev/null || true
+    fi
+fi
+
 # 确保在脚本所在目录运行
 SCRIPT_DIR="$(dirname "$0")"
 cd "$SCRIPT_DIR"

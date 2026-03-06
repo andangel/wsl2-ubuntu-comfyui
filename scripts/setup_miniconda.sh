@@ -42,15 +42,23 @@ EOF
         if conda info --envs | grep -q "^${CONDA_ENV_NAME} "; then
             log_warn "Conda 环境 '${CONDA_ENV_NAME}' 已存在。"
              log_info "跳过创建已存在的环境 '${CONDA_ENV_NAME}'。"
-             # Activate base environment
-             log_info "Activating '${CONDA_ENV_NAME}' environment..."
-             conda activate ${CONDA_ENV_NAME}
+             # Activate conda environment (if not already in it)
+             if [ "$CONDA_DEFAULT_ENV" != "${CONDA_ENV_NAME}" ]; then
+                 log_info "Activating '${CONDA_ENV_NAME}' environment..."
+                 if command -v conda &> /dev/null; then
+                     conda activate ${CONDA_ENV_NAME} 2>/dev/null || true
+                 fi
+             fi
         else
             log_info "正在创建 '${CONDA_ENV_NAME}' 环境 (Python ${PYTHON_VERSION})..."
             conda create -n ${CONDA_ENV_NAME} python=${PYTHON_VERSION} -y
-            # Activate base environment
-            log_info "Activating '${CONDA_ENV_NAME}' environment..."
-            conda activate ${CONDA_ENV_NAME}
+            # Activate conda environment (if not already in it)
+            if [ "$CONDA_DEFAULT_ENV" != "${CONDA_ENV_NAME}" ]; then
+                log_info "Activating '${CONDA_ENV_NAME}' environment..."
+                if command -v conda &> /dev/null; then
+                    conda activate ${CONDA_ENV_NAME} 2>/dev/null || true
+                fi
+            fi
         fi
 
         # Configure pip mirror (China)

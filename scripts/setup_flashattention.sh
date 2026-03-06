@@ -16,9 +16,13 @@ setup_flashattention() {
     if check_and_confirm "FlashAttention" "[ -d \"$FLASHATTENTION_DIR\" ]"; then
         log_info "正在安装 FlashAttention..."
 
-        # Activate conda environment
-        log_info "激活 conda 环境..."
-        conda activate ${CONDA_ENV_NAME}
+        # Activate conda environment (if not already in it)
+        if [ "$CONDA_DEFAULT_ENV" != "${CONDA_ENV_NAME}" ]; then
+            log_info "激活 conda 环境..."
+            if command -v conda &> /dev/null; then
+                conda activate ${CONDA_ENV_NAME} 2>/dev/null || true
+            fi
+        fi
 
         # Try to download precompiled wheel from GitHub Actions
         local wheel_name="flash_attn-${FLASHATTENTION_VERSION}+cu12torch2.8cxx11abiTRUE-cp312-cp312-linux_x86_64.whl"

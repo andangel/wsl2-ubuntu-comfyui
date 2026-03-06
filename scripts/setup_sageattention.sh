@@ -16,9 +16,13 @@ setup_sageattention() {
     if check_and_confirm "SageAttention" "[ -d \"$SAGEATTENTION_DIR\" ]"; then
         log_info "正在安装 SageAttention..."
 
-        # Activate conda environment
-        log_info "激活 conda 环境..."
-        conda activate ${CONDA_ENV_NAME}
+        # Activate conda environment (if not already in it)
+        if [ "$CONDA_DEFAULT_ENV" != "${CONDA_ENV_NAME}" ]; then
+            log_info "激活 conda 环境..."
+            if command -v conda &> /dev/null; then
+                conda activate ${CONDA_ENV_NAME} 2>/dev/null || true
+            fi
+        fi
 
         # Try to download precompiled wheel from GitHub Actions
         local wheel_name="sageattention-${SAGEATTENTION_VERSION}-cp312-cp312-linux_x86_64.whl"

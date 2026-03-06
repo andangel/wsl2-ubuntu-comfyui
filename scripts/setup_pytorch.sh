@@ -12,9 +12,13 @@ setup_pytorch() {
     if check_and_confirm "PyTorch ${PYTORCH_VERSION} (CUDA 12.8)" "$is_installed"; then
         log_info "正在安装 PyTorch ${PYTORCH_VERSION}, TorchVision ${TORCHVISION_VERSION}, TorchAudio ${TORCHAUDIO_VERSION}..."
 
-        # Activate conda environment
-        log_info "激活 conda 环境..."
-        conda activate ${CONDA_ENV_NAME}
+        # Activate conda environment (if not already in it)
+        if [ "$CONDA_DEFAULT_ENV" != "${CONDA_ENV_NAME}" ]; then
+            log_info "激活 conda 环境..."
+            if command -v conda &> /dev/null; then
+                conda activate ${CONDA_ENV_NAME} 2>/dev/null || true
+            fi
+        fi
 
         # Upgrade pip first
         log_info "升级 pip..."
