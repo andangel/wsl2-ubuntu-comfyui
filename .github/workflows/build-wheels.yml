@@ -1,0 +1,204 @@
+name: Build Precompiled Wheels
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-sageattention:
+    runs-on: ubuntu-24.04
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Install system dependencies and clean disk space
+      run: |
+        # Clean disk space before installation
+        sudo apt-get clean
+        sudo rm -rf /var/lib/apt/lists/*
+        sudo rm -rf /tmp/*
+        
+        # Update and install dependencies
+        sudo apt-get update
+        sudo apt-get install -y --no-install-recommends build-essential git wget
+
+    - name: Install CUDA Toolkit
+      run: |
+        wget https://developer.download.nvidia.com/compute/cuda/repos/wsl-ubuntu/x86_64/cuda-keyring_1.1-1_all.deb
+        sudo dpkg -i cuda-keyring_1.1-1_all.deb
+        sudo apt-get update
+        sudo apt-get install -y cuda-toolkit-12-8
+        echo "/usr/local/cuda-12.8/bin" >> $GITHUB_PATH
+        echo "LD_LIBRARY_PATH=/usr/local/cuda-12.8/lib64:$LD_LIBRARY_PATH" >> $GITHUB_ENV
+
+    - name: Install PyTorch
+      run: |
+        pip install --upgrade pip
+        pip install torch==2.8.0 torchvision==0.23.0 torchaudio==2.8.0 --index-url https://download.pytorch.org/whl/cu128
+        pip install ninja packaging
+
+    - name: Build sageattention
+      run: |
+        bash scripts/build_sageattention.sh
+
+    - name: Upload wheels
+      uses: actions/upload-artifact@v4
+      with:
+        name: sageattention-wheels
+        path: dist/*.whl
+        retention-days: 90
+
+  build-flashattention:
+    runs-on: ubuntu-24.04
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Install system dependencies and clean disk space
+      run: |
+        # Clean disk space before installation
+        sudo apt-get clean
+        sudo rm -rf /var/lib/apt/lists/*
+        sudo rm -rf /tmp/*
+        
+        # Update and install dependencies
+        sudo apt-get update
+        sudo apt-get install -y --no-install-recommends build-essential git wget
+
+    - name: Install CUDA Toolkit
+      run: |
+        wget https://developer.download.nvidia.com/compute/cuda/repos/wsl-ubuntu/x86_64/cuda-keyring_1.1-1_all.deb
+        sudo dpkg -i cuda-keyring_1.1-1_all.deb
+        sudo apt-get update
+        sudo apt-get install -y cuda-toolkit-12-8
+        echo "/usr/local/cuda-12.8/bin" >> $GITHUB_PATH
+        echo "LD_LIBRARY_PATH=/usr/local/cuda-12.8/lib64:$LD_LIBRARY_PATH" >> $GITHUB_ENV
+
+    - name: Install PyTorch
+      run: |
+        pip install --upgrade pip
+        pip install torch==2.8.0 torchvision==0.23.0 torchaudio==2.8.0 --index-url https://download.pytorch.org/whl/cu128
+        pip install ninja packaging
+
+    - name: Build flashattention
+      run: |
+        bash scripts/build_flashattention.sh
+
+    - name: Upload wheels
+      uses: actions/upload-artifact@v4
+      with:
+        name: flashattention-wheels
+        path: dist/*.whl
+        retention-days: 90
+
+  build-sam2:
+    runs-on: ubuntu-24.04
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Install system dependencies and clean disk space
+      run: |
+        # Clean disk space before installation
+        sudo apt-get clean
+        sudo rm -rf /var/lib/apt/lists/*
+        sudo rm -rf /tmp/*
+        
+        # Update and install dependencies
+        sudo apt-get update
+        sudo apt-get install -y --no-install-recommends build-essential git wget
+
+    - name: Install CUDA Toolkit
+      run: |
+        wget https://developer.download.nvidia.com/compute/cuda/repos/wsl-ubuntu/x86_64/cuda-keyring_1.1-1_all.deb
+        sudo dpkg -i cuda-keyring_1.1-1_all.deb
+        sudo apt-get update
+        sudo apt-get install -y cuda-toolkit-12-8
+        echo "/usr/local/cuda-12.8/bin" >> $GITHUB_PATH
+        echo "LD_LIBRARY_PATH=/usr/local/cuda-12.8/lib64:$LD_LIBRARY_PATH" >> $GITHUB_ENV
+
+    - name: Install PyTorch
+      run: |
+        pip install --upgrade pip
+        pip install torch==2.8.0 torchvision==0.23.0 torchaudio==2.8.0 --index-url https://download.pytorch.org/whl/cu128
+        pip install ninja packaging
+
+    - name: Build sam2
+      run: |
+        bash scripts/build_sam2.sh
+
+    - name: Upload wheels
+      uses: actions/upload-artifact@v4
+      with:
+        name: sam2-wheels
+        path: dist/*.whl
+        retention-days: 90
+
+  release-wheels:
+    runs-on: ubuntu-24.04
+    needs: [build-sageattention, build-flashattention, build-sam2]
+    if: github.event_name == 'workflow_dispatch'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Download sageattention wheels
+      uses: actions/download-artifact@v4
+      with:
+        name: sageattention-wheels
+        path: dist
+
+    - name: Download flashattention wheels
+      uses: actions/download-artifact@v4
+      with:
+        name: flashattention-wheels
+        path: dist
+
+    - name: Download sam2 wheels
+      uses: actions/download-artifact@v4
+      with:
+        name: sam2-wheels
+        path: dist
+
+    - name: List downloaded files
+      run: ls -la dist/
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: wheels-${{ github.sha }}
+        name: Precompiled Wheels
+        body: |
+          Precompiled wheel packages for Ubuntu 24.04 (WSL2) ComfyUI Environment
+
+          Available Packages:
+          - SageAttention 2.2.0
+          - FlashAttention 2.8.3
+          - SAM2 1.0
+
+          Installation:
+          The setup scripts will automatically download these wheels. If download fails, they will be compiled locally.
+        files: |
+          dist/*.whl
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
