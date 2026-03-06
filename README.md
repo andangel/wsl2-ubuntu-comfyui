@@ -64,16 +64,25 @@
 
 ## 🚀 快速开始
 
-1.  **赋予执行权限**
+### 完整流程
+
+1.  **克隆项目**
+    ```bash
+    git clone https://github.com/andangel/wsl2-ubuntu-comfyui.git
+    cd wsl2-ubuntu-comfyui
+    ```
+
+2.  **赋予执行权限**
     ```bash
     chmod +x main.sh scripts/*.sh
     ```
 
-2.  **一键全量配置** (推荐)
+3.  **一键配置基础环境** (推荐)
+    这会安装：Ubuntu 24.04 APT 镜像源、基础依赖、Miniconda、PyTorch、ComfyUI 及编译依赖
     ```bash
     ./main.sh --all
     ```
-
+    
 ## 📖 使用指南
 
 ### 常用命令选项
