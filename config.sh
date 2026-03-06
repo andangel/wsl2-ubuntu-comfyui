@@ -40,6 +40,10 @@ SAM2_VERSION="1.0"
 PIP_INDEX_URL="https://pypi.tuna.tsinghua.edu.cn/simple"
 PIP_TRUSTED_HOST="pypi.tuna.tsinghua.edu.cn"
 
+# GitHub Proxy Configuration (for faster downloads)
+# Format: https://gh.llkk.cc/ or leave empty to disable
+GITHUB_PROXY="https://gh.llkk.cc/"
+
 # Versions
 PYTHON_VERSION="3.12"
 CONDA_ENV_NAME="base"

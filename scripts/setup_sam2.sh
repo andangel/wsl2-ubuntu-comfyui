@@ -22,19 +22,43 @@ setup_sam2() {
 
         # Try to download precompiled wheel from GitHub Actions
         local wheel_name="sam_2-${SAM2_VERSION}-cp312-cp312-linux_x86_64.whl"
-        local download_url="https://github.com/andangel/wsl2-ubuntu-comfyui/releases/download/wheels/${wheel_name}"
+        local original_url="https://github.com/andangel/wsl2-ubuntu-comfyui/releases/download/wheels/${wheel_name}"
+        local proxy_url="${GITHUB_PROXY}${original_url}"
         local temp_wheel="/tmp/${wheel_name}"
+        local download_success=0
 
         log_info "尝试下载预编译的 SAM2 wheel..."
-        if wget -q --spider "$download_url" 2>/dev/null; then
-            log_info "从 GitHub 下载预编译 wheel..."
-            wget -q "$download_url" -O "$temp_wheel" || handle_net_error
+
+        # Try 1: Proxy URL (if configured)
+        if [ -n "$GITHUB_PROXY" ]; then
+            log_info "尝试从代理下载 (1/3)..."
+            if wget -q --spider "$proxy_url" 2>/dev/null; then
+                log_info "从代理下载预编译 wheel..."
+                if wget -q "$proxy_url" -O "$temp_wheel" 2>/dev/null; then
+                    download_success=1
+                fi
+            fi
+        fi
+
+        # Try 2: Original URL
+        if [ $download_success -eq 0 ]; then
+            log_info "尝试从 GitHub 直接下载 (2/3)..."
+            if wget -q --spider "$original_url" 2>/dev/null; then
+                log_info "从 GitHub 下载预编译 wheel..."
+                if wget -q "$original_url" -O "$temp_wheel" 2>/dev/null; then
+                    download_success=1
+                fi
+            fi
+        fi
+
+        # Try 3: Install if downloaded, else compile
+        if [ $download_success -eq 1 ]; then
             log_info "安装预编译 wheel..."
             pip install "$temp_wheel"
             rm -f "$temp_wheel"
             log_success "SAM2 ${SAM2_VERSION} 安装完成（使用预编译 wheel）。"
         else
-            log_warn "未找到预编译 wheel，开始本地编译..."
+            log_warn "下载预编译 wheel 失败，开始本地编译 (3/3)..."
 
             # Check if CUDA Toolkit is installed
             if ! command -v nvcc &> /dev/null; then
