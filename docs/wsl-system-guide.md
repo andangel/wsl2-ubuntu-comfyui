@@ -609,4 +609,38 @@ Get-EventLog -LogName Application -Source "Wsl*" -Newest 20
 |------|------|
 | 8188 | ComfyUI Web 界面 |
 
+### 10.6 系统清理命令
+
+备份前建议执行以下清理命令：
+
+```bash
+# 安全清理（推荐）
+sudo apt clean && sudo apt autoremove -y && conda clean --all -y && pip cache purge
+```
+
+| 命令 | 说明 |
+|------|------|
+| `sudo apt clean` | 清理 apt 下载的包缓存 |
+| `sudo apt autoclean` | 清理过期的包缓存 |
+| `sudo apt autoremove` | 删除不再需要的依赖包 |
+| `conda clean --all` | 清理 conda 所有缓存 |
+| `pip cache purge` | 清理 pip 缓存 |
+
+### 10.7 清除历史记录
+
+备份前建议清除历史记录：
+
+```bash
+# 完全清除历史记录
+history -c && rm -f ~/.bash_history ~/.python_history ~/.lesshst ~/.viminfo ~/.mysql_history 2>/dev/null
+```
+
+| 命令 | 说明 |
+|------|------|
+| `history -c` | 清除当前会话历史 |
+| `rm ~/.bash_history` | 删除 bash 历史文件 |
+| `rm ~/.python_history` | 删除 Python 历史文件 |
+| `rm ~/.lesshst` | 删除 less 历史文件 |
+| `rm ~/.viminfo` | 删除 Vim 历史文件 |
+
 本指南基于 Microsoft 官方文档和实际使用经验编写，旨在为普通用户提供清晰易懂的 WSL2 使用指南。
