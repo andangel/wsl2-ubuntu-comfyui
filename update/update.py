@@ -153,12 +153,13 @@ if not os.path.exists(req_path) or not files_equal(repo_req_path, req_path):
         pass
 
 
-stable_update_script = os.path.join(repo_path, ".ci/update_windows/update_comfyui_stable.bat")
-stable_update_script_to = os.path.join(cur_path, "update_comfyui_stable.bat")
-
-try:
-    if not file_size(stable_update_script_to) > 10:
-        shutil.copy(stable_update_script, stable_update_script_to)
-except:
-    pass
+# 注释掉：WSL 环境不需要 Windows 批处理脚本
+# stable_update_script = os.path.join(repo_path, ".ci/update_windows/update_comfyui_stable.bat")
+# stable_update_script_to = os.path.join(cur_path, "update_comfyui_stable.bat")
+# 
+# try:
+#     if not file_size(stable_update_script_to) > 10:
+#         shutil.copy(stable_update_script, stable_update_script_to)
+# except:
+#     pass
 
