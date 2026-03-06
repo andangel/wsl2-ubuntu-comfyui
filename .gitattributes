@@ -1,0 +1,42 @@
+# Git 换行符配置
+# 统一处理不同操作系统的换行符问题
+
+# Shell 脚本使用 LF (Unix 风格)
+*.sh text eol=lf
+*.bash text eol=lf
+
+# PowerShell 脚本使用 CRLF (Windows 风格)
+*.ps1 text eol=crlf
+*.psm1 text eol=crlf
+*.psd1 text eol=crlf
+
+# Windows 批处理文件使用 CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# 配置文件
+*.conf text eol=lf
+*.config text eol=lf
+*.ini text eol=lf
+*.json text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.toml text eol=lf
+
+# 文本文件自动处理
+*.md text=auto
+*.txt text=auto
+
+# 确保模板文件使用 LF
+*.template text eol=lf
+
+# 忽略二进制文件
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
