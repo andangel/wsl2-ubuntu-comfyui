@@ -3,7 +3,28 @@
 ## 项目概览
 本项目提供了一套模块化、灵活的 Shell 脚本套件 (`wsl2-ubuntu-comfyui`)，用于初始化和配置 Ubuntu 24.04 (WSL2) ComfyUI AI 图像生成环境。它自动化安装 AI 开发所需的工具和库，并为国内用户配置了高速镜像源（清华大学开源软件镜像站、Gitee），旨在提供开箱即用的 ComfyUI 开发体验。
 
-## 常用指令
+## Windows 部署（推荐）
+项目提供 Windows PowerShell 一键部署脚本，无需手动配置 WSL2：
+
+### 快速部署
+1. **下载** `install.tar.gz`（Ubuntu 24.04 根文件系统）
+2. **双击运行** `wsl_scripts/Run-Install-ComfyUI.bat`
+3. **按交互式向导提示** 完成 WSL2 实例创建
+4. **进入 WSL** 并执行 `./main.sh --all` 完成环境配置
+
+### PowerShell 脚本功能
+- **Install-ComfyUI.ps1**: 交互式部署向导，支持自定义实例名称、安装路径等参数
+- **Check-WSL2-Requirements.ps1**: 检查系统是否满足 WSL2 运行要求
+- **Recommend-WSL-Config.ps1**: 根据硬件配置推荐最优 WSL2 设置
+
+### 部署参数
+| 参数 | 默认值 | 说明 |
+|------|--------|------|
+| 实例名称 | Comfyui | WSL 实例名称 |
+| 安装盘符 | D: | 自动创建 D:\WSL2 目录 |
+| install.tar.gz | 用户下载目录 | Ubuntu 24.04 根文件系统路径 |
+
+## Linux/WSL 常用指令
 - **执行所有配置任务**: `./main.sh --all`
 - **配置特定组件**:
   - APT 镜像源: `./main.sh --apt`
@@ -21,26 +42,41 @@
 - `main.sh`: 主入口脚本。负责解析参数并调用具体的子脚本。
 - `config.sh`: 集中化配置文件（版本号、镜像源 URL、路径配置等）。
 - `lib/utils.sh`: 通用工具库，包含日志打印、颜色输出、前置依赖检查函数。
-- `init-wsl2-ubuntu.md`: WSL2 基础系统初始化指南。
-- `wsl-system-guide.md`: WSL2 系统配置详细指南。
+- `docs/`: 文档目录。
+  - `CLAUDE.md`: 项目上下文与开发指南（本文件）。
+  - `init-wsl2-ubuntu.md`: WSL2 基础系统初始化指南。
+  - `wsl-system-guide.md`: WSL2 系统配置详细指南。
 - `scripts/`: 独立组件的安装/配置脚本。
   - `setup_apt.sh`: APT 软件源配置。
   - `install_deps.sh`: 基础依赖安装 (unzip, build-essential)。
   - `setup_miniconda.sh`: Miniconda 安装，配置 pip 镜像。
   - `setup_cudatoolkit.sh`: CUDA Toolkit 12.8 安装。
   - `setup_pytorch.sh`: PyTorch 2.8.0 (CUDA 12.8) 安装。
-  - `setup_comfyui.sh`: ComfyUI 及依赖安装。
+  - `setup_comfyui.sh`: ComfyUI 及依赖安装，自动添加别名。
   - `setup_sageattention.sh`: SageAttention 2.2.0 安装（支持预编译 wheel 下载）。
   - `setup_flashattention.sh`: FlashAttention 2.8.3 安装（支持预编译 wheel 下载）。
   - `setup_sam2.sh`: SAM2 1.0 安装（支持预编译 wheel 下载）。
   - `diagnose.sh`: 环境诊断脚本。
+  - `update-github-hosts.sh`: GitHub hosts 更新脚本。
   - `build_*.sh`: GitHub Actions 编译脚本。
-- `test/`: 测试脚本目录。
+- `wsl_scripts/`: Windows PowerShell 部署脚本目录。
+  - `Install-ComfyUI.ps1`: WSL2 交互式部署脚本（主脚本）。
+  - `Run-Install-ComfyUI.bat`: 部署脚本启动器（双击运行）。
+  - `Check-WSL2-Requirements.ps1`: WSL2 系统需求检查工具。
+  - `Run-WSL2-Check.bat`: 检查工具启动器。
+  - `Recommend-WSL-Config.ps1`: WSL2 配置推荐工具。
+  - `Run-WSL-Config-Recommend.bat`: 配置推荐启动器。
+  - `.wslconfig.template`: WSL2 配置文件模板。
 - `update/`: ComfyUI 更新脚本目录。
   - `update_comfyui.sh`: 更新到最新版本。
   - `update_comfyui_stable.sh`: 更新到稳定版本。
   - `update_comfyui_and_python_dependencies.sh`: 更新 ComfyUI 和 Python 依赖。
+  - `update.py`: Python 更新脚本。
+  - `current_requirements.txt`: 当前依赖版本记录。
+- `test/`: 测试脚本目录。
 - `image/`: 项目架构图（PNG 格式）。
+- `.github/workflows/`: GitHub Actions 工作流目录。
+  - `build-wheels.yml`: 自动编译预编译 wheel 包。
 
 ## Shell 别名
 安装 ComfyUI 后会自动添加以下别名到 `~/.bashrc`：
@@ -84,6 +120,8 @@
 | Git (国外) | github.com/andangel/ | 项目克隆 |
 
 ## 项目变更记录
+- **Windows 部署**: 添加 PowerShell 一键部署脚本（Install-ComfyUI.ps1），支持交互式向导，双击即可部署 WSL2 + ComfyUI 完整环境。
+- **WSL2 配置工具**: 添加系统需求检查（Check-WSL2-Requirements.ps1）和配置推荐（Recommend-WSL-Config.ps1）工具。
 - **项目定位**: 从通用 WSL2 配置工具转变为专门的 ComfyUI 环境配置工具。
 - **目标系统**: 从 Ubuntu 22.04 升级到 Ubuntu 24.04 LTS。
 - **核心功能**: 移除了通用开发工具配置，专注于 AI 图像生成环境。
@@ -95,3 +133,5 @@
 - **诊断功能**: 添加了 `--diagnose` 选项用于环境检查。
 - **前置检查**: 添加了依赖检查函数，确保安装顺序正确。
 - **国际化**: 所有输出改为简体中文。
+- **目录结构**: 将 CLAUDE.md 移动到 docs/ 目录，添加 wsl_scripts/ 目录存放 Windows 脚本。
+- **Git 配置**: 添加 .gitattributes 统一处理换行符（LF/CRLF）。
