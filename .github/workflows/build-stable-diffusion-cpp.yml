@@ -48,6 +48,21 @@ jobs:
           -G Ninja
         cmake --build . -j$(nproc)
 
+    - name: Check build output
+      run: |
+        cd stable-diffusion.cpp
+        echo "=== 构建目录内容 ==="
+        ls -la
+        echo "=== build 目录内容 ==="
+        ls -la build/ || echo "Build directory not found"
+        if [ ! -f "build/sd" ]; then
+            echo "=== 构建失败，检查 CMake 输出 ==="
+            cat build/CMakeCache.txt || echo "CMakeCache.txt not found"
+            cat build/CMakeError.log || echo "CMakeError.log not found"
+            cat build/CMakeOutput.log || echo "CMakeOutput.log not found"
+            exit 1
+        fi
+
     - name: Test build
       run: |
         cd stable-diffusion.cpp/build
