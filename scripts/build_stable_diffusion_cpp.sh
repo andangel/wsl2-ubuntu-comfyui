@@ -58,8 +58,9 @@ cd build
 # 配置 CMake
 echo -e "${GREEN}配置 CMake...${NC}"
 cmake .. \
-    -DGGML_CUDA=ON \
-    -DGGML_CUDA_FORCE_MMQ=ON \
+    -DSD_CUDA=ON \
+    -DSD_BUILD_SHARED_LIBS=ON \
+    -DCMAKE_CUDA_ARCHITECTURES='61;70;75;80;86;89;90;100;120' \
     -DCMAKE_BUILD_TYPE=Release \
     -G Ninja
 
@@ -68,17 +69,19 @@ echo -e "${GREEN}编译中...${NC}"
 cmake --build . -j$(nproc)
 
 # 验证构建
-if [ -f "sd" ]; then
+if [ -f "bin/sd" ]; then
     echo -e "${GREEN}构建成功！${NC}"
-    echo -e "${GREEN}可执行文件: $(pwd)/sd${NC}"
+    echo -e "${GREEN}可执行文件: $(pwd)/bin/sd${NC}"
     echo -e "${GREEN}测试运行:${NC}"
-    ./sd --help | head -20
+    ./bin/sd --help | head -20
 else
     echo -e "${RED}构建失败！${NC}"
+    echo -e "${RED}检查 build/bin 目录内容:${NC}"
+    ls -la bin/ || echo "bin 目录不存在"
     exit 1
 fi
 
 cd ../..
 echo -e "${GREEN}=== 构建完成 ===${NC}"
 echo -e "${GREEN}使用方法:${NC}"
-echo -e "  ${YELLOW}./stable-diffusion.cpp/build/sd -m path/to/model.safetensors -p \"prompt\" --device cuda${NC}"
+echo -e "  ${YELLOW}./stable-diffusion.cpp/build/bin/sd -m path/to/model.safetensors -p \"prompt\" --device cuda${NC}"
