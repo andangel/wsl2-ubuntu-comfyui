@@ -42,8 +42,9 @@ jobs:
         mkdir -p build
         cd build
         cmake .. \
-          -DGGML_CUDA=ON \
-          -DGGML_CUDA_FORCE_MMQ=ON \
+          -DSD_CUDA=ON \
+          -DSD_BUILD_SHARED_LIBS=ON \
+          -DCMAKE_CUDA_ARCHITECTURES='61;70;75;80;86;89;90;100;120' \
           -DCMAKE_BUILD_TYPE=Release \
           -G Ninja
         cmake --build . -j$(nproc)
@@ -55,7 +56,9 @@ jobs:
         ls -la
         echo "=== build 目录内容 ==="
         ls -la build/ || echo "Build directory not found"
-        if [ ! -f "build/sd" ]; then
+        echo "=== build/bin 目录内容 ==="
+        ls -la build/bin/ || echo "Build/bin directory not found"
+        if [ ! -f "build/bin/sd" ]; then
             echo "=== 构建失败，检查 CMake 输出 ==="
             cat build/CMakeCache.txt || echo "CMakeCache.txt not found"
             cat build/CMakeError.log || echo "CMakeError.log not found"
@@ -65,14 +68,14 @@ jobs:
 
     - name: Test build
       run: |
-        cd stable-diffusion.cpp/build
+        cd stable-diffusion.cpp/build/bin
         ./sd --help | head -20
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: stable-diffusion-cpp
-        path: stable-diffusion.cpp/build/sd
+        path: stable-diffusion.cpp/build/bin/sd
         retention-days: 90
 
     - name: Create Release
@@ -101,7 +104,7 @@ jobs:
           ./sd -m path/to/flux.safetensors -p "a beautiful cat" --device cuda
           ```
         files: |
-          stable-diffusion.cpp/build/sd
+          stable-diffusion.cpp/build/bin/sd
         draft: false
         prerelease: false
       env:
