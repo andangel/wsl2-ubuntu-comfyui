@@ -19,7 +19,9 @@ jobs:
           git \
           wget \
           cmake \
-          ninja-build
+          ninja-build \
+          libopenmpi-dev \
+          openmpi-bin
 
     - name: Install CUDA Toolkit
       run: |
@@ -41,10 +43,13 @@ jobs:
         cd stable-diffusion.cpp
         mkdir -p build
         cd build
+        
+        echo "=== 配置 CMake (CUDA 版本) ==="
         cmake .. \
           -DSD_CUDA=ON \
           -DSD_BUILD_SHARED_LIBS=ON \
           -DCMAKE_CUDA_ARCHITECTURES='89' \
+          -DCMAKE_CUDA_FLAGS='-Xcudafe "--diag_suppress=177" -Xcudafe "--diag_suppress=550"' \
           -DCMAKE_BUILD_TYPE=Release \
           -G Ninja
         
