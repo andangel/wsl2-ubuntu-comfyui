@@ -52,33 +52,39 @@ jobs:
     - name: Build with CUDA
       run: |
         cd stable-diffusion.cpp
+        
+        # Ensure build directory exists
         mkdir -p build
         cd build
         
         echo "=== 配置 CMake (CUDA 版本) ==="
-        cmake .. \
+        if ! cmake .. \
           -DSD_CUDA=ON \
           -DSD_BUILD_SHARED_LIBS=ON \
           -DCMAKE_CUDA_ARCHITECTURES='89' \
           -DCMAKE_CUDA_FLAGS='-Xcudafe "--diag_suppress=177" -Xcudafe "--diag_suppress=550"' \
           -DCMAKE_BUILD_TYPE=Release \
-          -G Ninja \
-          2>&1 | tee ../cmake_config.log
-        
-        echo "=== 开始编译 ==="
-        cmake --build . --config Release 2>&1 | tee ../build.log
-        
-        if [ ${PIPESTATUS[0]} -ne 0 ]; then
-            echo "=== 编译失败，完整错误日志 ==="
-            cat ../build.log
-            echo "=== CMake 配置日志 ==="
-            cat ../cmake_config.log
-            echo "=== CMakeError.log ==="
-            cat build/CMakeFiles/CMakeError.log 2>/dev/null || echo "CMakeError.log not found"
-            echo "=== CMakeOutput.log ==="
-            cat build/CMakeFiles/CMakeOutput.log 2>/dev/null || echo "CMakeOutput.log not found"
+          -G Ninja; then
+            echo "=== CMake 配置失败 ==="
+            echo "=== CMakeCache.txt 最后 50 行 ==="
+            tail -50 CMakeCache.txt
+            echo "=== CMakeFiles/CMakeError.log ==="
+            cat CMakeFiles/CMakeError.log 2>/dev/null || echo "Not found"
             exit 1
         fi
+        
+        echo "=== 开始编译 ==="
+        if ! cmake --build . --config Release; then
+            echo "=== 编译失败 ==="
+            echo "=== 构建目录内容 ==="
+            ls -la
+            echo "=== bin 目录内容 ==="
+            ls -la bin/ 2>/dev/null || echo "bin directory not found"
+            exit 1
+        fi
+        
+        echo "=== 编译成功 ==="
+        ls -la bin/
 
     - name: Check build output
       run: |
