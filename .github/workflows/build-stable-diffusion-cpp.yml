@@ -64,22 +64,18 @@ jobs:
           -DCMAKE_CUDA_ARCHITECTURES='89' \
           -DCMAKE_CUDA_FLAGS='-Xcudafe "--diag_suppress=177" -Xcudafe "--diag_suppress=550"' \
           -DCMAKE_BUILD_TYPE=Release \
-          -G Ninja; then
+          -G Ninja 2>&1 | tee ../cmake_output.log; then
             echo "=== CMake 配置失败 ==="
-            echo "=== CMakeCache.txt 最后 50 行 ==="
-            tail -50 CMakeCache.txt
-            echo "=== CMakeFiles/CMakeError.log ==="
-            cat CMakeFiles/CMakeError.log 2>/dev/null || echo "Not found"
+            tail -100 ../cmake_output.log
             exit 1
         fi
         
-        echo "=== 开始编译 ==="
-        if ! cmake --build . --config Release; then
-            echo "=== 编译失败 ==="
-            echo "=== 构建目录内容 ==="
-            ls -la
-            echo "=== bin 目录内容 ==="
-            ls -la bin/ 2>/dev/null || echo "bin directory not found"
+        echo "=== 开始编译（显示最后 100 行错误信息）==="
+        if ! cmake --build . --config Release 2>&1 | tee ../build_output.log; then
+            echo "=== 编译失败 - 显示最后 100 行 ==="
+            tail -100 ../build_output.log
+            echo "=== 如果最后 100 行不够，查看完整日志的前 200 行 ==="
+            head -200 ../build_output.log
             exit 1
         fi
         
@@ -95,24 +91,33 @@ jobs:
         ls -la build/ || echo "Build directory not found"
         echo "=== build/bin 目录内容 ==="
         ls -la build/bin/ || echo "Build/bin directory not found"
-        if [ ! -f "build/bin/sd" ]; then
-            echo "=== 构建失败，检查 CMake 输出 ==="
-            cat build/CMakeCache.txt || echo "CMakeCache.txt not found"
-            cat build/CMakeError.log || echo "CMakeError.log not found"
-            cat build/CMakeOutput.log || echo "CMakeOutput.log not found"
+        if [ ! -f "build/bin/sd-cli" ] && [ ! -f "build/bin/sd" ]; then
+            echo "=== 构建失败，检查可执行文件 ==="
             exit 1
         fi
+        echo "=== 构建成功，找到可执行文件 ==="
+        ls -la build/bin/sd* 2>/dev/null || true
 
     - name: Test build
       run: |
         cd stable-diffusion.cpp/build/bin
-        ./sd --help | head -20
+        if [ -f "sd-cli" ]; then
+            ./sd-cli --help | head -20
+        elif [ -f "sd" ]; then
+            ./sd --help | head -20
+        else
+            echo "No executable found"
+            exit 1
+        fi
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: stable-diffusion-cpp
-        path: stable-diffusion.cpp/build/bin/sd
+        path: |
+          stable-diffusion.cpp/build/bin/sd-cli
+          stable-diffusion.cpp/build/bin/sd-server
+          stable-diffusion.cpp/build/bin/libstable-diffusion.so
         retention-days: 90
 
     - name: Create Release
@@ -141,7 +146,9 @@ jobs:
           ./sd -m path/to/flux.safetensors -p "a beautiful cat" --device cuda
           ```
         files: |
-          stable-diffusion.cpp/build/bin/sd
+          stable-diffusion.cpp/build/bin/sd-cli
+          stable-diffusion.cpp/build/bin/sd-server
+          stable-diffusion.cpp/build/bin/libstable-diffusion.so
         draft: false
         prerelease: false
       env:
