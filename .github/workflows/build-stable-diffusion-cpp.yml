@@ -44,7 +44,7 @@ jobs:
         cmake .. \
           -DSD_CUDA=ON \
           -DSD_BUILD_SHARED_LIBS=ON \
-          -DCMAKE_CUDA_ARCHITECTURES='61;70;75;80;86;89;90;100;120' \
+          -DCMAKE_CUDA_ARCHITECTURES='89' \
           -DCMAKE_BUILD_TYPE=Release \
           -G Ninja
         cmake --build . -j$(nproc)
@@ -87,7 +87,7 @@ jobs:
           Precompiled Stable-Diffusion.cpp with CUDA support for Ubuntu 24.04 (WSL2)
           
           Features:
-          - CUDA acceleration for NVIDIA GPUs (Ampere, Ada Lovelace, Hopper)
+          - CUDA acceleration for NVIDIA GPUs (Ada Lovelace, RTX 40 series)
           - Built with CUDA 12.8
           - Support for multiple models (SD1.x, SD2.x, SDXL, SD3, FLUX, etc.)
           - Latest version with FLUX.2-klein support

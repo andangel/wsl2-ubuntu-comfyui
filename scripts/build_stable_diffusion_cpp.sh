@@ -60,7 +60,7 @@ echo -e "${GREEN}配置 CMake...${NC}"
 cmake .. \
     -DSD_CUDA=ON \
     -DSD_BUILD_SHARED_LIBS=ON \
-    -DCMAKE_CUDA_ARCHITECTURES='61;70;75;80;86;89;90;100;120' \
+    -DCMAKE_CUDA_ARCHITECTURES='89' \
     -DCMAKE_BUILD_TYPE=Release \
     -G Ninja
 
