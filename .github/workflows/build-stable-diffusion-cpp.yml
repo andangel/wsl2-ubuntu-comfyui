@@ -63,7 +63,6 @@ jobs:
           -DSD_BUILD_SHARED_LIBS=OFF \
           -DCMAKE_CUDA_ARCHITECTURES='89' \
           -DCMAKE_CUDA_FLAGS='-Xcudafe "--diag_suppress=177" -Xcudafe "--diag_suppress=550"' \
-          -DCUDA_USE_STATIC_CUDA_RUNTIME=ON \
           -DCMAKE_BUILD_TYPE=Release \
           -G Ninja 2>&1 | tee ../cmake_output.log; then
             echo "=== CMake 配置失败 ==="
@@ -132,9 +131,12 @@ jobs:
           Features:
           - CUDA acceleration for NVIDIA GPUs (Ada Lovelace, RTX 40 series)
           - Built with CUDA 12.8
-          - **Static CUDA runtime linking** (no need to install CUDA Toolkit in WSL)
           - Support for multiple models (SD1.x, SD2.x, SDXL, SD3, FLUX, etc.)
           - Latest version with FLUX.2-klein support
+          
+          Requirements:
+          - NVIDIA GPU with CUDA driver
+          - CUDA runtime libraries (install via: sudo apt-get install cuda-runtime-12-8)
           
           Usage:
           ```bash
