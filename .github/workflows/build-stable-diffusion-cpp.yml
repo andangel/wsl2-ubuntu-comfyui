@@ -47,7 +47,15 @@ jobs:
           -DCMAKE_CUDA_ARCHITECTURES='89' \
           -DCMAKE_BUILD_TYPE=Release \
           -G Ninja
-        cmake --build . -j$(nproc)
+        
+        echo "=== 开始编译（减少并行数以节省内存）==="
+        cmake --build . -j2 2>&1 | tee ../build.log
+        
+        if [ ${PIPESTATUS[0]} -ne 0 ]; then
+            echo "=== 编译失败，查看完整日志 ==="
+            cat ../build.log
+            exit 1
+        fi
 
     - name: Check build output
       run: |
