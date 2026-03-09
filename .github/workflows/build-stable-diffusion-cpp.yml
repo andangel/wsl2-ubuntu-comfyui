@@ -19,9 +19,7 @@ jobs:
           git \
           wget \
           cmake \
-          ninja-build \
-          libopenmpi-dev \
-          openmpi-bin
+          ninja-build
 
     - name: Install CUDA Toolkit
       run: |
@@ -45,22 +43,10 @@ jobs:
         cd build
         
         echo "=== 配置 CMake (CUDA 版本) ==="
-        cmake .. \
-          -DSD_CUDA=ON \
-          -DSD_BUILD_SHARED_LIBS=ON \
-          -DCMAKE_CUDA_ARCHITECTURES='89' \
-          -DCMAKE_CUDA_FLAGS='-Xcudafe "--diag_suppress=177" -Xcudafe "--diag_suppress=550"' \
-          -DCMAKE_BUILD_TYPE=Release \
-          -G Ninja
+        cmake .. -DSD_CUDA=ON -DCMAKE_BUILD_TYPE=Release
         
-        echo "=== 开始编译（减少并行数以节省内存）==="
-        cmake --build . -j2 2>&1 | tee ../build.log
-        
-        if [ ${PIPESTATUS[0]} -ne 0 ]; then
-            echo "=== 编译失败，查看完整日志 ==="
-            cat ../build.log
-            exit 1
-        fi
+        echo "=== 开始编译 ==="
+        cmake --build . --config Release -j$(nproc)
 
     - name: Check build output
       run: |
