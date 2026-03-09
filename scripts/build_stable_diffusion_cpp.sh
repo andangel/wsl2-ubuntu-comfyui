@@ -57,16 +57,11 @@ cd build
 
 # 配置 CMake
 echo -e "${GREEN}配置 CMake...${NC}"
-cmake .. \
-    -DSD_CUDA=ON \
-    -DSD_BUILD_SHARED_LIBS=ON \
-    -DCMAKE_CUDA_ARCHITECTURES='89' \
-    -DCMAKE_BUILD_TYPE=Release \
-    -G Ninja
+cmake .. -DSD_CUDA=ON -DCMAKE_BUILD_TYPE=Release
 
 # 编译
 echo -e "${GREEN}编译中...${NC}"
-cmake --build . -j$(nproc)
+cmake --build . --config Release -j$(nproc)
 
 # 验证构建
 if [ -f "bin/sd" ]; then
