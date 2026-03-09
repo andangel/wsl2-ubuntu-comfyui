@@ -64,9 +64,14 @@ echo -e "${GREEN}编译中...${NC}"
 cmake --build . --config Release -j$(nproc)
 
 # 验证构建
-if [ -f "bin/sd" ]; then
+if [ -f "bin/sd-cli" ]; then
     echo -e "${GREEN}构建成功！${NC}"
-    echo -e "${GREEN}可执行文件: $(pwd)/bin/sd${NC}"
+    echo -e "${GREEN}可执行文件：$(pwd)/bin/sd-cli${NC}"
+    echo -e "${GREEN}测试运行:${NC}"
+    ./bin/sd-cli --help | head -20
+elif [ -f "bin/sd" ]; then
+    echo -e "${GREEN}构建成功！${NC}"
+    echo -e "${GREEN}可执行文件：$(pwd)/bin/sd${NC}"
     echo -e "${GREEN}测试运行:${NC}"
     ./bin/sd --help | head -20
 else
@@ -79,4 +84,5 @@ fi
 cd ../..
 echo -e "${GREEN}=== 构建完成 ===${NC}"
 echo -e "${GREEN}使用方法:${NC}"
-echo -e "  ${YELLOW}./stable-diffusion.cpp/build/bin/sd -m path/to/model.safetensors -p \"prompt\" --device cuda${NC}"
+echo -e "  ${YELLOW}./stable-diffusion.cpp/build/bin/sd-cli -m path/to/model.safetensors -p \"prompt\" --device cuda${NC}"
+echo -e "  ${YELLOW}或者：./stable-diffusion.cpp/build/bin/sd-server --help${NC}"
