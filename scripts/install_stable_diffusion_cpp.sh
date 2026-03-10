@@ -54,6 +54,14 @@ fi
 echo -e "${GREEN}=== 下载 Stable-Diffusion.cpp ===${NC}"
 cd "$INSTALL_DIR"
 
+# 检查并删除已存在的文件
+if [ -f "$INSTALL_DIR/sd-cli" ] || [ -f "$INSTALL_DIR/sd-server" ] || [ -f "$INSTALL_DIR/libstable-diffusion.so" ]; then
+    echo -e "${YELLOW}检测到已存在的文件，正在删除...${NC}"
+    rm -f "$INSTALL_DIR/sd-cli" "$INSTALL_DIR/sd-server" "$INSTALL_DIR/libstable-diffusion.so"
+    rm -f "$BIN_DIR/sd-cli" "$BIN_DIR/sd-server" "$BIN_DIR/libstable-diffusion.so"
+    echo -e "${GREEN}✓ 已清理旧文件${NC}"
+fi
+
 # 使用 GitHub 代理（如果配置了）
 if [ -n "$GITHUB_PROXY" ]; then
     RELEASE_URL="${GITHUB_PROXY}https://github.com/andangel/wsl2-ubuntu-comfyui/releases/download/stable-diffusion-cpp"
@@ -84,7 +92,7 @@ download_file() {
     fi
 }
 
-# 下载所有文件
+# 下载所有文件（共享库版本需要三个文件）
 download_file "sd-cli"
 download_file "sd-server"
 download_file "libstable-diffusion.so"
@@ -98,6 +106,7 @@ chmod +x "$INSTALL_DIR/sd-server"
 echo -e "${GREEN}=== 创建符号链接 ===${NC}"
 ln -sf "$INSTALL_DIR/sd-cli" "$BIN_DIR/sd-cli"
 ln -sf "$INSTALL_DIR/sd-server" "$BIN_DIR/sd-server"
+ln -sf "$INSTALL_DIR/libstable-diffusion.so" "$BIN_DIR/libstable-diffusion.so"
 
 # 添加到 PATH
 if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
@@ -112,6 +121,7 @@ echo -e "${GREEN}=== 验证安装 ===${NC}"
 if [ -f "$INSTALL_DIR/sd-cli" ]; then
     echo -e "${GREEN}✓ sd-cli 已安装${NC}"
     echo -e "  位置：$INSTALL_DIR/sd-cli"
+    echo -e "  大小：$(du -h "$INSTALL_DIR/sd-cli" | cut -f1)"
 else
     echo -e "${RED}✗ sd-cli 安装失败${NC}"
     exit 1
@@ -120,6 +130,7 @@ fi
 if [ -f "$INSTALL_DIR/sd-server" ]; then
     echo -e "${GREEN}✓ sd-server 已安装${NC}"
     echo -e "  位置：$INSTALL_DIR/sd-server"
+    echo -e "  大小：$(du -h "$INSTALL_DIR/sd-server" | cut -f1)"
 else
     echo -e "${RED}✗ sd-server 安装失败${NC}"
     exit 1
@@ -128,16 +139,54 @@ fi
 if [ -f "$INSTALL_DIR/libstable-diffusion.so" ]; then
     echo -e "${GREEN}✓ libstable-diffusion.so 已安装${NC}"
     echo -e "  位置：$INSTALL_DIR/libstable-diffusion.so"
+    echo -e "  大小：$(du -h "$INSTALL_DIR/libstable-diffusion.so" | cut -f1)"
 else
     echo -e "${RED}✗ libstable-diffusion.so 安装失败${NC}"
     exit 1
+fi
+
+# 检查并安装 CUDA runtime
+echo -e ""
+echo -e "${GREEN}=== 检查 CUDA runtime ===${NC}"
+
+# 检查是否已安装 CUDA runtime
+if ldconfig -p | grep -q "libcudart.so.12"; then
+    echo -e "${GREEN}✓ CUDA runtime 已安装${NC}"
+else
+    echo -e "${YELLOW}⚠ 未找到 CUDA runtime，正在安装...${NC}"
+    
+    # 检查是否已安装 CUDA keyring
+    if ! dpkg -l | grep -q "cuda-keyring"; then
+        echo -e "${GREEN}下载 CUDA keyring...${NC}"
+        wget -q https://developer.download.nvidia.com/compute/cuda/repos/wsl-ubuntu/x86_64/cuda-keyring_1.1-1_all.deb
+        
+        echo -e "${GREEN}安装 CUDA keyring...${NC}"
+        sudo dpkg -i cuda-keyring_1.1-1_all.deb
+        rm -f cuda-keyring_1.1-1_all.deb
+    else
+        echo -e "${GREEN}✓ CUDA keyring 已存在${NC}"
+    fi
+    
+    # 更新包列表
+    echo -e "${GREEN}更新包列表...${NC}"
+    sudo apt-get update
+    
+    # 安装 CUDA runtime
+    echo -e "${GREEN}安装 CUDA runtime 12-8...${NC}"
+    if sudo apt-get install -y cuda-runtime-12-8; then
+        echo -e "${GREEN}✓ CUDA runtime 安装成功${NC}"
+    else
+        echo -e "${RED}✗ CUDA runtime 安装失败${NC}"
+        echo -e "${YELLOW}提示：可以手动安装 sudo apt-get install -y cuda-runtime-12-8${NC}"
+        exit 1
+    fi
 fi
 
 # 测试运行
 echo -e "${GREEN}=== 测试运行 ===${NC}"
 if [ -x "$BIN_DIR/sd-cli" ] || [ -x "$INSTALL_DIR/sd-cli" ]; then
     echo -e "${YELLOW}运行 sd-cli --help...${NC}"
-    "$INSTALL_DIR/sd-cli" --help 2>&1 | head -10
+    "$INSTALL_DIR/sd-cli" --help 2>&1 | head -15
     echo -e "${GREEN}✓ 测试成功！${NC}"
 else
     echo -e "${RED}✗ 无法执行 sd-cli${NC}"
