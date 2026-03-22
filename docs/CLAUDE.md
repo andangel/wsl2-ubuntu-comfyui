@@ -70,9 +70,10 @@
 - `update/`: ComfyUI 更新脚本目录。
   - `update_comfyui.sh`: 更新到最新版本。
   - `update_comfyui_stable.sh`: 更新到稳定版本。
-  - `update_comfyui_and_python_dependencies.sh`: 更新 ComfyUI 和 Python 依赖。
-  - `update.py`: Python 更新脚本。
-  - `current_requirements.txt`: 当前依赖版本记录。
+  - `comfyui_symlinks.sh`: ComfyUI 符号链接管理。
+  - `restore_symlinks.sh`: 恢复符号链接。
+  - `run_nvidia_gpu.sh`: NVIDIA GPU 启动脚本。
+  - `run_cpu.sh`: CPU 启动脚本。
 - `test/`: 测试脚本目录。
 - `image/`: 项目架构图（PNG 格式）。
 - `.github/workflows/`: GitHub Actions 工作流目录。

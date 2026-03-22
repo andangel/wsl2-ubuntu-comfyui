@@ -1,29 +1,64 @@
 #!/bin/bash
 
-# 稳定版本的 ComfyUI 更新脚本
+# ComfyUI 稳定版本更新脚本
+# 更新到最新的稳定版本（Tag）
 
-# 确保 conda 环境已激活
-if [ "$CONDA_DEFAULT_ENV" != "base" ]; then
-    if command -v conda &> /dev/null; then
-        conda activate base 2>/dev/null || true
-    fi
+echo "================================"
+echo "ComfyUI 稳定版本更新"
+echo "================================"
+echo ""
+
+COMFYUI_DIR="$HOME/ComfyUI"
+
+# 检查 ComfyUI 目录是否存在
+if [ ! -d "$COMFYUI_DIR" ]; then
+    echo "Error: ComfyUI 目录不存在：$COMFYUI_DIR"
+    exit 1
 fi
 
-# 确保在脚本所在目录运行
-SCRIPT_DIR="$(dirname "$0")"
-cd "$SCRIPT_DIR"
+cd "$COMFYUI_DIR"
 
-# 运行更新脚本
-python ./update.py ../ComfyUI/ --stable
+# 先切换到 master 分支
+echo "切换到 master 分支..."
+git checkout master 2>/dev/null || git checkout -b master origin/master 2>/dev/null
 
-# 如果有 update_new.py，就替换旧的 update.py 并再次运行
-if [ -f "update_new.py" ]; then
-  mv -f update_new.py update.py
-  echo "更新器已更新，正在重新运行更新。"
-  python ./update.py ../ComfyUI/ --skip_self_update --stable
+# 显示当前版本
+echo "当前版本信息："
+git log --oneline -1
+echo ""
+
+# 拉取最新代码和标签
+echo "正在拉取最新代码和标签..."
+git pull origin master --tags
+
+# 获取最新稳定版本标签
+LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null)
+
+if [ -z "$LATEST_TAG" ]; then
+    echo "Error: 未找到稳定版本标签"
+    exit 1
 fi
 
-# 如果没有命令行参数，就暂停
-if [ -z "$1" ]; then
-  read -p "按 Enter 键继续..."
+echo ""
+echo "最新稳定版本：$LATEST_TAG"
+echo "正在切换到稳定版本..."
+
+# 切换到最新稳定版本
+git checkout "$LATEST_TAG"
+
+if [ $? -eq 0 ]; then
+    echo ""
+    echo "================================"
+    echo "已更新到稳定版本：$LATEST_TAG"
+    echo "================================"
+    echo ""
+    echo "版本信息："
+    git log --oneline -1
+    echo ""
+    echo "提示：如有依赖更新，请运行："
+    echo "pip install -r requirements.txt"
+else
+    echo ""
+    echo "Error: 切换版本失败"
+    exit 1
 fi

@@ -134,9 +134,10 @@
 ├── update/                 # ComfyUI 更新脚本目录
 │   ├── update_comfyui.sh        # 更新到最新版本
 │   ├── update_comfyui_stable.sh # 更新到稳定版本
-│   ├── update_comfyui_and_python_dependencies.sh
-│   ├── update.py
-│   └── current_requirements.txt
+│   ├── comfyui_symlinks.sh      # ComfyUI 符号链接管理
+│   ├── restore_symlinks.sh      # 恢复符号链接
+│   ├── run_nvidia_gpu.sh        # NVIDIA GPU 启动脚本
+│   └── run_cpu.sh               # CPU 启动脚本
 ├── wsl_scripts/            # Windows PowerShell 脚本
 │   ├── Install-ComfyUI.ps1           # WSL2 部署脚本（交互式向导）
 │   ├── Run-Install-ComfyUI.bat       # 部署脚本启动器
@@ -175,7 +176,7 @@
 | 别名 | 命令 | 说明 |
 |------|------|------|
 | `comfyui` | `bash ~/run_nvidia_gpu.sh` | 启动 ComfyUI (GPU 模式) |
-| `comfyui-update` | `bash ~/update/update_comfyui_stable.sh` | 更新 ComfyUI 到稳定版本 |
+| `comfyui-update` | `bash ~/update/update_comfyui.sh` | 更新 ComfyUI 到最新版本 |
 
 使用别名启动：
 ```bash

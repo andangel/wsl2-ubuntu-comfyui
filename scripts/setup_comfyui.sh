@@ -81,7 +81,7 @@ EOF
             cat >> ~/.bashrc << 'EOF'
 
 # ComfyUI update alias
-alias comfyui-update='bash $HOME/update/update_comfyui_stable.sh'
+alias comfyui-update='bash $HOME/update/update_comfyui.sh'
 EOF
             log_info "已添加 ComfyUI 更新别名到 ~/.bashrc"
             log_info "现在可以在任何目录输入 'comfyui-update' 更新 ComfyUI (稳定版本)"
